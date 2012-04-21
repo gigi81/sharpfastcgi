@@ -6,12 +6,26 @@ using FastCgi.Tcp;
 
 namespace FastCgi.Test
 {
-	public class SimpleServer : TcpServer
+	public class SimpleServer : MarshalByRefObject
 	{
-		public SimpleServer(int port)
+		private SimpleTcpServer _server = new SimpleTcpServer();
+
+		public void Start()
+		{
+			_server.Start();
+		}
+	}
+	
+	internal class SimpleTcpServer : TcpServer
+	{
+		public SimpleTcpServer()
+			: this(9000)
+		{
+		}
+
+		public SimpleTcpServer(int port)
 			: base(port)
 		{
-
 		}
 
 		protected override void CreateChannel(TcpLayer tcpLayer)

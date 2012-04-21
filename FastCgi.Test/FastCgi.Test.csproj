@@ -53,6 +53,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomAspNetChannel.cs" />
@@ -106,7 +107,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)*.dll" "$(TargetDir)Root\bin\*.dll"</PostBuildEvent>
+    <PostBuildEvent>copy "$(TargetDir)*.dll" "$(TargetDir)Root\bin\*.dll"
+copy "$(TargetDir)*.exe" "$(TargetDir)Root\bin\*.exe"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

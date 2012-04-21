@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Text;
 using System.Threading;
 using FastCgi.Protocol;
@@ -11,11 +12,11 @@ namespace FastCgi.AspNet
 {
 	public class AspNetRequest : Request
 	{
-		private AspNetRequestContext _context;
-
 		public AspNetRequest(ushort id, BeginRequestMessageBody body)
 			: base(id, body)
 		{
+			this.Status = String.Empty;
+			this.Headers = new NameValueCollection();
 		}
 
 		public bool HeaderSent { get; protected set; }
@@ -24,38 +25,34 @@ namespace FastCgi.AspNet
 
 		public string PhysicalPath { get; set; }
 
-		protected AspNetRequestContext Context
-		{
-			get
-			{
-				if (_context == null)
-				{
-					_context = new AspNetRequestContext();
-					_context.InputStream = this.InputStream;
-					_context.OutputStream = this.OutputStream;
-					_context.Parameters = this.Parameters;
-					_context.PhysicalPath = this.PhysicalPath;
-					_context.VirtualPath = this.VirtualPath;
-					//_context.Ended += new EventHandler(_context_Ended);
-				}
+		public string Status { get; set; }
 
-				return _context;
-			}
+		public NameValueCollection Headers { get; set; }
+
+		public void SetStatus(int statusCode, string statusDescription)
+		{
+			if (this.HeaderSent)
+				throw new InvalidOperationException("Cannot set status on a response that has already been flushed");
+
+			this.Status = String.Format("{0} {1} {2}", this.Parameters.GetValue("SERVER_PROTOCOL"), statusCode, statusDescription);
 		}
 
-		void _context_Ended(object sender, EventArgs e)
+		public void SetHeader(string name, string value)
 		{
-			this.End();
+			if (this.HeaderSent)
+				throw new InvalidOperationException("Cannot set headers on a response that has already been flushed");
+
+			this.Headers.Set(name, value);
 		}
 
 		//protected Thread Thread { get; set; }
 
 		protected override void OnOutputStreamFlushing(FlushEventArgs args)
 		{
-			if (!this.Context.HeaderSent)
+			if (!this.HeaderSent)
 			{
 				args = new FlushEventArgs(this.SerializeHeaders() + args.Data);
-				this.Context.HeaderSent = true;
+				this.HeaderSent = true;
 			}
 
 			base.OnOutputStreamFlushing(args);
@@ -70,11 +67,7 @@ namespace FastCgi.AspNet
 
 		protected virtual void ProcessRequest()
 		{
-			//MyExeHost myHost = (MyExeHost)MyAspHost.CreateApplicationHost(typeof(MyExeHost), this.VirtualPath, this.PhysicalPath);
-			MyExeHost myHost = (MyExeHost)ApplicationHost.CreateApplicationHost(typeof(MyExeHost), this.VirtualPath, this.PhysicalPath);
-			myHost.SetContext(this.Context);
-			myHost.ProcessRequest();
-			this.End();
+			System.Web.HttpRuntime.ProcessRequest(new FastCgiWorkerRequest(this));
 		}
 
 		public override void Abort()
@@ -87,17 +80,17 @@ namespace FastCgi.AspNet
 		{
 			StringBuilder builder = new StringBuilder();
 
-			if (String.IsNullOrEmpty(this.Context.Status))
+			if (String.IsNullOrEmpty(this.Status))
 			{
-				builder.Append(this.Context.Status);
+				builder.Append(this.Status);
 				builder.Append("\r\n");
 			}
 
-			foreach (string key in this.Context.Headers.Keys)
+			foreach (string key in this.Headers.Keys)
 			{
 				builder.Append(key);
 				builder.Append(": ");
-				builder.Append(this.Context.Headers[key]);
+				builder.Append(this.Headers[key]);
 				builder.Append("\r\n");
 			}
 

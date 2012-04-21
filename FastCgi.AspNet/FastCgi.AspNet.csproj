@@ -39,7 +39,6 @@
   <ItemGroup>
     <Compile Include="AspNetHosting.cs" />
     <Compile Include="AspNetRequest.cs" />
-    <Compile Include="AspNetRequestContext.cs" />
     <Compile Include="FastCgiWorkerRequest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

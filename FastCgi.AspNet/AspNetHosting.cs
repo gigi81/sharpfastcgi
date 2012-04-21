@@ -7,26 +7,6 @@ using System.Globalization;
 
 namespace FastCgi.AspNet
 {
-	public class MyExeHost : MarshalByRefObject
-	{
-		private AspNetRequestContext _context;
-
-		public void SetContext(AspNetRequestContext context)
-		{
-			_context = context;		
-		}
-
-		public void ProcessRequest()
-		{
-			System.Web.HttpRuntime.ProcessRequest(new FastCgiWorkerRequest(_context));
-		}
-
-		public override object InitializeLifetimeService()
-		{
-			return null;
-		}
-	}
-
 	public class MyAspHost
 	{
 		public static object CreateApplicationHost(Type hostType, string virtualDir, string physicalDir)
