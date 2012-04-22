@@ -8,7 +8,6 @@ namespace FastCgi.Tcp
 {
     public class TcpLayer : ILowerLayer
     {
-        private Queue<ByteArray> _queue = new Queue<ByteArray>();
         private TcpClient _client;
 
         byte[] _receiveBuffer = new byte[FastCgi.Protocol.Consts.SuggestedBufferSize];
@@ -19,6 +18,9 @@ namespace FastCgi.Tcp
             _client = client;
         }
 
+		/// <summary>
+		/// Upper layer to send data received from tcp channel
+		/// </summary>
         public IUpperLayer UpperLayer { get; set; }
 
         public void Run()

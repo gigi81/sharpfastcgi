@@ -6,7 +6,7 @@ using System.Text;
 namespace FastCgi.Test
 {
 	[Serializable]
-	public class CustomAspNetChannel : FastCgi.Protocol.Channel
+	public class CustomAspNetChannel : FastCgi.Protocol.FastCgiChannel
 	{
 		private Dictionary<ushort, CustomAspNetRequest> _request = new Dictionary<ushort, CustomAspNetRequest>();
 

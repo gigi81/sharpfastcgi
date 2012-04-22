@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FastCgi.Test
 {
-    public class SimpleChannel : FastCgi.Protocol.Channel
+    public class SimpleChannel : FastCgi.Protocol.FastCgiChannel
     {
         private Dictionary<ushort, SimpleRequest> _request = new Dictionary<ushort, SimpleRequest>();
 

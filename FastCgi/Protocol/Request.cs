@@ -73,6 +73,9 @@ namespace FastCgi.Protocol
 
 		public abstract void Abort();
 
+		/// <summary>
+		/// Ends the request
+		/// </summary>
 		public void End()
 		{
 			this.OutputStream.Flush();

@@ -10,7 +10,7 @@ namespace FastCgi.Protocol
 	/// <summary>
 	/// FastiCGI channel
 	/// </summary>
-	public abstract class Channel : IUpperLayer
+	public abstract class FastCgiChannel : IUpperLayer
 	{
 		/// <summary>
 		/// Event generated when a request is ended
@@ -24,12 +24,15 @@ namespace FastCgi.Protocol
 		/// </summary>
 		public ILowerLayer LowerLayer { get; set; }
 
+		/// <summary>
+		/// Channel properties as required by protocol specifications
+		/// </summary>
 		public ChannelProperties Properties { get; protected set; }
 
 		/// <summary>
 		/// Receives data from the lower layer
 		/// </summary>
-		/// <param name="data"></param>
+		/// <param name="data">Data recived</param>
 		public virtual void Receive(ByteArray data)
 		{
 			_recvBuffer += data;
@@ -84,14 +87,6 @@ namespace FastCgi.Protocol
 					this.SendGetValuesResult(message.Body);
 					break;
 
-				case MessageType.UnknownType:
-					break;
-
-				case MessageType.StandardOutput:
-				case MessageType.StandardError:
-				case MessageType.EndRequest:
-				case MessageType.GetValuesResult:
-				case MessageType.None:
 				default:
 					break;
 			}

@@ -107,7 +107,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(TargetDir)*.dll" "$(TargetDir)Root\bin\*.dll"
+    <PostBuildEvent>mkdir "$(TargetDir)Root\bin"
+copy "$(TargetDir)*.dll" "$(TargetDir)Root\bin\*.dll"
 copy "$(TargetDir)*.exe" "$(TargetDir)Root\bin\*.exe"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

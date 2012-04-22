@@ -41,6 +41,10 @@ namespace FastCgi.Tcp
             tcpLayer.Run();
         }
 
+		/// <summary>
+		/// Creates a new FastCgiChannel
+		/// </summary>
+		/// <param name="tcpLayer"></param>
         protected abstract void CreateChannel(TcpLayer tcpLayer);
     }
 }

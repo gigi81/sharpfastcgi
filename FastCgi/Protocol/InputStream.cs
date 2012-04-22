@@ -4,6 +4,9 @@ using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
 
 namespace FastCgi.Protocol
 {
+	/// <summary>
+	/// Input stream to read data from
+	/// </summary>
     public class InputStream : Stream
     {
         private ByteArray _array;

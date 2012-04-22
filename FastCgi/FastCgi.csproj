@@ -38,7 +38,7 @@
     <Compile Include="Protocol\ILayer.cs" />
     <Compile Include="Protocol\InputStream.cs" />
     <Compile Include="Protocol\ChannelProperties.cs" />
-    <Compile Include="Protocol\Channel.cs" />
+    <Compile Include="Protocol\FastCgiChannel.cs" />
     <Compile Include="ImmutableArray\ImmutableArray.cs" />
     <Compile Include="ImmutableArray\ImmutableArrayEnumerator.cs" />
     <Compile Include="ImmutableArray\ImmutableArrayInternal.cs" />

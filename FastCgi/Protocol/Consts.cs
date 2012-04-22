@@ -146,6 +146,9 @@ namespace FastCgi.Protocol
 		/// </summary>
 		public const ushort MaxMessageBodySize = 0xFFFF;
 
+		/// <summary>
+		/// Suggested buffer size for lower layers
+		/// </summary>
         public const int SuggestedBufferSize = ChunkSize * 2 + MaxMessageBodySize;
 
 		/*
@@ -159,11 +162,23 @@ namespace FastCgi.Protocol
 
     public static class Utils
     {
+		/// <summary>
+		/// Reads a <see cref="ushort"/> from the <see cref="ByteArray"/> specified
+		/// </summary>
+		/// <param name="data"></param>
+		/// <param name="offset"></param>
+		/// <returns></returns>
         public static ushort ReadUint16(ByteArray data, int offset)
         {
             return (ushort)((data[offset] << 8) + data[offset + 1]);
         }
 
+		/// <summary>
+		/// Reads a <see cref="short"/> from the <see cref="ByteArray"/> specified
+		/// </summary>
+		/// <param name="data"></param>
+		/// <param name="offset"></param>
+		/// <returns></returns>
         public static ushort ReadUint16(byte[] data, int offset)
         {
             return (ushort)((data[offset] << 8) + data[offset + 1]);

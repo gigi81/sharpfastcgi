@@ -11,13 +11,13 @@ namespace FastCgi.AspNet
 	{
 		private AspNetRequest _request;
 
-		public FastCgiWorkerRequest(AspNetRequest ctx)
+		public FastCgiWorkerRequest(AspNetRequest request)
 			: base(String.Empty, String.Empty, null)
 		{
-			if (null == ctx)
-				throw new ArgumentNullException("ctx");
+			if (null == request)
+				throw new ArgumentNullException("request");
 
-			_request = ctx;
+			_request = request;
 		}
 
 		public override void EndOfRequest()

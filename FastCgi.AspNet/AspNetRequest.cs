@@ -19,15 +19,15 @@ namespace FastCgi.AspNet
 			this.Headers = new NameValueCollection();
 		}
 
-		public bool HeaderSent { get; protected set; }
-
 		public string VirtualPath { get; set; }
 
 		public string PhysicalPath { get; set; }
 
-		public string Status { get; set; }
+		public bool HeaderSent { get; protected set; }
 
-		public NameValueCollection Headers { get; set; }
+		public string Status { get; protected set; }
+
+		public NameValueCollection Headers { get; protected set; }
 
 		public void SetStatus(int statusCode, string statusDescription)
 		{
@@ -45,8 +45,6 @@ namespace FastCgi.AspNet
 			this.Headers.Set(name, value);
 		}
 
-		//protected Thread Thread { get; set; }
-
 		protected override void OnOutputStreamFlushing(FlushEventArgs args)
 		{
 			if (!this.HeaderSent)
@@ -60,20 +58,15 @@ namespace FastCgi.AspNet
 
 		public override void Execute()
 		{
-			//this.Thread = new System.Threading.Thread(this.ProcessRequest);
-			//this.Thread.Start();
-			ProcessRequest();
-		}
-
-		protected virtual void ProcessRequest()
-		{
 			System.Web.HttpRuntime.ProcessRequest(new FastCgiWorkerRequest(this));
 		}
 
+		/// <summary>
+		/// This is single threaded so we can't abort the request
+		/// </summary>
 		public override void Abort()
 		{
-			//if(this.Thread != null && this.Thread.IsAlive)
-			//    this.Thread.Abort();
+			throw new InvalidOperationException("Abort is not available");
 		}
 
 		protected virtual ByteArray SerializeHeaders()

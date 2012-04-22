@@ -5,8 +5,13 @@ using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
 
 namespace FastCgi.Protocol
 {
+	/// <summary>
+	/// Output stream to write data to
+	/// </summary>
 	public class OutputStream : Stream
 	{
+		private MemoryStream _chache = new MemoryStream(256);
+
 		public event EventHandler<FlushEventArgs> Flushing;
 
 		private ByteArray _array = ByteArray.Empty;
@@ -32,6 +37,8 @@ namespace FastCgi.Protocol
 
 		public override void Flush()
 		{
+			this.WriteCache();
+
 			if (_array.Count <= 0)
 				return; //nothing to flush
 
@@ -65,7 +72,24 @@ namespace FastCgi.Protocol
 
 		public override void Write(byte[] buffer, int offset, int count)
 		{
-			_array += new ByteArray(buffer, count, offset);
+			if (count <= 16)
+			{
+				_chache.Write(buffer, offset, count);
+			}
+			else
+			{
+				this.WriteCache();
+				_array += new ByteArray(buffer, count, offset);
+			}
+		}
+
+		private void WriteCache()
+		{
+			if (_chache.Length <= 0)
+				return;
+
+			_array += new ByteArray(_chache.ToArray());
+			_chache.SetLength(0);
 		}
 	}
 
