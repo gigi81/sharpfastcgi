@@ -38,15 +38,5 @@ namespace FastCgi.Test
         {
             return _request[requestId];
         }
-
-        protected override void ExecuteRequest(Protocol.Request request)
-        {
-            request.Execute();
-        }
-
-        protected override void AbortRequest(Protocol.Request request)
-        {
-            request.Abort();
-        }
     }
 }

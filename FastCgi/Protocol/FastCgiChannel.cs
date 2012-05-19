@@ -17,6 +17,9 @@ namespace FastCgi.Protocol
 		/// </summary>
 		public event EventHandler RequestEnded;
 
+		/// <summary>
+		/// Receive buffer
+		/// </summary>
 		private ByteArray _recvBuffer = ByteArray.Empty;
 
 		/// <summary>
@@ -65,7 +68,7 @@ namespace FastCgi.Protocol
 					break;
 
 				case MessageType.AbortRequest:
-					this.AbortRequest(this.GetRequest(requestId));
+					this.GetRequest(requestId).Abort();
 					break;
 
 				case MessageType.Params:
@@ -76,7 +79,7 @@ namespace FastCgi.Protocol
 					if (message.Header.ContentLength > 0)
 						this.GetRequest(requestId).InputStream.Append(message.Body);
 					else
-						this.ExecuteRequest(this.GetRequest(requestId));
+						this.GetRequest(requestId).Execute();
 					break;
 
 				case MessageType.Data:
@@ -217,10 +220,6 @@ namespace FastCgi.Protocol
 		protected abstract void RemoveRequest(Request request);
 
 		protected abstract Request GetRequest(ushort requestId);
-
-		protected abstract void ExecuteRequest(Request request);
-
-		protected abstract void AbortRequest(Request request);
 
 		#endregion
 	}

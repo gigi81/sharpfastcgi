@@ -7,7 +7,6 @@ using FastCgi.AspNet;
 
 namespace FastCgi.Test
 {
-	[Serializable]
 	public class CustomAspNetRequest : AspNetRequest
 	{
 		public CustomAspNetRequest(ushort id, BeginRequestMessageBody body)

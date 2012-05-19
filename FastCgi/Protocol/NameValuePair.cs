@@ -5,7 +5,6 @@ using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
 
 namespace FastCgi.Protocol
 {
-	[Serializable]
 	public class NameValuePair
 	{
 		public string Name { get; set; }

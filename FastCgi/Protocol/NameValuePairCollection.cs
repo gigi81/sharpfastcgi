@@ -8,7 +8,6 @@ using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
 
 namespace FastCgi.Protocol
 {
-	[Serializable]
 	public class NameValuePairCollection : IEnumerable<NameValuePair>
 	{
 		private Dictionary<string, NameValuePair> _dictionary = new Dictionary<string, NameValuePair>();

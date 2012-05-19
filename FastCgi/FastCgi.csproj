@@ -51,6 +51,7 @@
     <Compile Include="Protocol\Message.cs" />
     <Compile Include="Protocol\MessageHeader.cs" />
     <Compile Include="Protocol\Request.cs" />
+    <Compile Include="Protocol\SimpleFastCgiChannel.cs" />
     <Compile Include="Tcp\TcpLayer.cs" />
     <Compile Include="Tcp\TcpServer.cs" />
   </ItemGroup>
