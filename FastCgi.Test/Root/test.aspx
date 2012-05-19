@@ -1,2 +1,2 @@
-ma ciao!
-<% = DateTime.Now.ToString() %>
+Hello world!<br />
+Datetime here is: <% = DateTime.Now.ToString() %>
