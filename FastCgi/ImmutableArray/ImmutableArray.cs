@@ -39,6 +39,7 @@ namespace FastCgi.ImmutableArray
 		public static readonly ImmutableArray<T> Empty = new ImmutableArray<T>(new T[0]);
 
 		private List<ImmutableArrayInternal<T>> _arrays = new List<ImmutableArrayInternal<T>>();
+		private List<int> _offsets = new List<int>();
 		private int _length = 0;
 
 		#region Constructors
@@ -114,7 +115,6 @@ namespace FastCgi.ImmutableArray
 		public int Count
 		{
 			get { return _length; }
-			private set { _length = value; }
 		}
 
 		/// <summary>
@@ -127,7 +127,7 @@ namespace FastCgi.ImmutableArray
 			get
 			{
 				int arrayIndex = this.GetArrayIndexAt(ref index);
-				return this.ArraysCollection[arrayIndex][index];
+				return _arrays[arrayIndex][index];
 			}
 		}
 
@@ -158,14 +158,14 @@ namespace FastCgi.ImmutableArray
 			if ((sourceIndex + length) > this.Count)
 				throw new ArgumentOutOfRangeException("The sourceIndex and length specified overcome the array length");
 
-			ImmutableArrayInternal<T> array = this.ArraysCollection[i];
+			ImmutableArrayInternal<T> array = _arrays[i];
 			array = new ImmutableArrayInternal<T>(sourceIndex, array, array.Length < length ? array.Length : length);
 			length -= array.Length;
 
 			ret.Add(array);
-			for (i += 1; (length > 0) && (i < this.ArraysCollection.Count); i++)
+			for (i += 1; (length > 0) && (i < _arrays.Count); i++)
 			{
-				array = this.ArraysCollection[i];
+				array = _arrays[i];
 				if (array.Length > length) //if only partial create a subarray
 					array = array.SubArrayInternal(0, length);
 
@@ -271,7 +271,7 @@ namespace FastCgi.ImmutableArray
 		#region Private methods/properties
 		private void Add(ImmutableArray<T> array)
 		{
-			foreach (ImmutableArrayInternal<T> item in array.ArraysCollection)
+			foreach (ImmutableArrayInternal<T> item in array._arrays)
 				this.Add(item);
 		}
 
@@ -280,28 +280,67 @@ namespace FastCgi.ImmutableArray
 			if (array.Length <= 0)
 				return;
 
-			this.ArraysCollection.Add(array);
-			this.Count += array.Length;
+			_arrays.Add(array);
+			_offsets.Add(this.Count + array.Length);
+			_length += array.Length;
 		}
 
-		private IList<ImmutableArrayInternal<T>> ArraysCollection
-		{
-			get { return _arrays; }
-		}
-
+		/// <summary>
+		/// Finds the index of the internal array containing the i-th element in the immutable array
+		/// </summary>
+		/// <param name="index">IN: the i-th element in the immutable array, OUT: the i-th element in the internal array</param>
+		/// <returns>Index of the internal array containing the data</returns>
+		/// <remarks>
+		/// This is the second version of the method.
+		/// It uses an offset array to speed up the search of the internal array index.
+		/// This is designed for performance more than code readability
+		/// </remarks>
 		private int GetArrayIndexAt(ref int index)
 		{
 			if ((index < 0) || (index >= this.Count))
 				throw new IndexOutOfRangeException(String.Format("Index {0} out of array bounds", index));
 
-			for(int i=0; i<this.ArraysCollection.Count; i++)
-			{
-				if (index < this.ArraysCollection[i].Length)
-					return i;
+			//we exclude that the data is in the first internal array
+			if (index < _offsets[0])
+				return 0;
 
-				index -= this.ArraysCollection[i].Length;
+			int min = 1;
+			int max = _offsets.Count - 1;
+
+			while(index >= _offsets[min])
+			{
+				int middle = min + ((max - min) >> 1);
+				if (middle == min) //when (max - min) < 2 this can happen
+					middle++;
+
+				if (index < _offsets[middle])
+				{
+					max = middle;
+					min++; //we already know that min is not valid so why waste a loop cicle?
+				}
+				else //index >= _offsets[middle]
+				{
+					min = middle;
+				}
 			}
 
+			index -= _offsets[min - 1];
+			return min;
+		}
+
+		private int GetArrayIndexAt_v1(ref int index)
+		{
+			if ((index < 0) || (index >= this.Count))
+				throw new IndexOutOfRangeException(String.Format("Index {0} out of array bounds", index));
+		
+			for(int i=0; i<_arrays.Count; i++)
+			{
+				if (index < _arrays[i].Length)
+					return i;
+
+				index -= _arrays[i].Length;
+			}
+		
 			return -1;
 		}
 		#endregion
@@ -356,7 +395,7 @@ namespace FastCgi.ImmutableArray
 		{
 			StringBuilder builder = new StringBuilder();
 
-			foreach (ImmutableArrayInternal<T> array in this.ArraysCollection)
+			foreach (ImmutableArrayInternal<T> array in _arrays)
 			{
 				if (builder.Length > 0)
 					builder.Append(ImmutableArrayInternal<T>.SEPARATOR);
