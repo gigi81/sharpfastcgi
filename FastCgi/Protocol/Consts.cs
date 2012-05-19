@@ -35,25 +35,25 @@ namespace FastCgi.Protocol
 	/// </summary>
 	public enum Role : ushort
 	{
-        /// <summary>
-        /// A Responder FastCGI application has the same purpose as a CGI/1.1 program:
-        /// It receives all the information associated with an HTTP request and generates
-        /// an HTTP response. 
-        /// </summary>
+		/// <summary>
+		/// A Responder FastCGI application has the same purpose as a CGI/1.1 program:
+		/// It receives all the information associated with an HTTP request and generates
+		/// an HTTP response. 
+		/// </summary>
 		Responder = 1,
-        /// <summary>
-        /// An Authorizer FastCGI application receives all the information associated with
-        /// an HTTP request and generates an authorized/unauthorized decision.
-        /// In case of an authorized decision the Authorizer can also associate name-value pairs
-        /// with the HTTP request; when giving an unauthorized decision the Authorizer sends a
-        /// complete response to the HTTP client. 
-        /// </summary>
+		/// <summary>
+		/// An Authorizer FastCGI application receives all the information associated with
+		/// an HTTP request and generates an authorized/unauthorized decision.
+		/// In case of an authorized decision the Authorizer can also associate name-value pairs
+		/// with the HTTP request; when giving an unauthorized decision the Authorizer sends a
+		/// complete response to the HTTP client. 
+		/// </summary>
 		Authorizer = 2,
-        /// <summary>
-        /// A Filter FastCGI application receives all the information associated with an
-        /// HTTP request, plus an extra stream of data from a file stored on the Web server,
-        /// and generates a "filtered" version of the data stream as an HTTP response. 
-        /// </summary>
+		/// <summary>
+		/// A Filter FastCGI application receives all the information associated with an
+		/// HTTP request, plus an extra stream of data from a file stored on the Web server,
+		/// and generates a "filtered" version of the data stream as an HTTP response. 
+		/// </summary>
 		Filter = 3
 	};
 
@@ -103,9 +103,9 @@ namespace FastCgi.Protocol
 
 	public enum MessageType : byte
 	{
-        /// <summary>
-        /// No message type specified
-        /// </summary>
+		/// <summary>
+		/// No message type specified
+		/// </summary>
 		None = 0,
 		/// <summary>
 		/// Message sent from the web server to begin a request
@@ -127,29 +127,29 @@ namespace FastCgi.Protocol
 		/// Message sent from the web server supply request input
 		/// </summary>
 		StandardInput = 5,
-        /// <summary>
-        /// Message sent form the fastcgi server containing the reply content
-        /// </summary>
+		/// <summary>
+		/// Message sent form the fastcgi server containing the reply content
+		/// </summary>
 		StandardOutput = 6,
-        /// <summary>
-        /// Message sent form the fastcgi server containing the reply content in case of errors
-        /// </summary>
+		/// <summary>
+		/// Message sent form the fastcgi server containing the reply content in case of errors
+		/// </summary>
 		StandardError = 7,
 		/// <summary>
 		/// Message sent from the web server supply request extra data
 		/// </summary>
 		Data = 8,
-        /// <summary>
-        /// Message sent from the web server to request fastcgi application parameters
-        /// </summary>
+		/// <summary>
+		/// Message sent from the web server to request fastcgi application parameters
+		/// </summary>
 		GetValues = 9,
-        /// <summary>
-        /// Message sent from the fastcgi application in reply to a <see cref="MessageType.GetValues"/> request
-        /// </summary>
+		/// <summary>
+		/// Message sent from the fastcgi application in reply to a <see cref="MessageType.GetValues"/> request
+		/// </summary>
 		GetValuesResult = 10,
-        /// <summary>
-        /// Message of a unknown type
-        /// </summary>
+		/// <summary>
+		/// Message of a unknown type
+		/// </summary>
 		UnknownType = 11
 	}
 
@@ -173,29 +173,29 @@ namespace FastCgi.Protocol
 		/// <summary>
 		/// Suggested buffer size for lower layers
 		/// </summary>
-        public const int SuggestedBufferSize = ChunkSize * 2 + MaxMessageBodySize;
+		public const int SuggestedBufferSize = ChunkSize * 2 + MaxMessageBodySize;
 
 		/*
 		* Return codes for Process* functions
 		*/
 		public static int def_FCGIStreamRecord    = 0;
-		public static int def_FCGISkip        = 1;
-		public static int def_FCGIBeginRecord = 2;
-		public static int def_FCGIMgmtRecord = 3;
+		public static int def_FCGISkip        	  = 1;
+		public static int def_FCGIBeginRecord 	  = 2;
+		public static int def_FCGIMgmtRecord 	  = 3;
 	}
 
-    public static class Utils
-    {
+	public static class Utils
+	{
 		/// <summary>
 		/// Reads a <see cref="ushort"/> from the <see cref="ByteArray"/> specified
 		/// </summary>
 		/// <param name="data"></param>
 		/// <param name="offset"></param>
 		/// <returns></returns>
-        public static ushort ReadUint16(ByteArray data, int offset)
-        {
-            return (ushort)((data[offset] << 8) + data[offset + 1]);
-        }
+		public static ushort ReadUint16(ByteArray data, int offset)
+		{
+			return (ushort)((data[offset] << 8) + data[offset + 1]);
+		}
 
 		/// <summary>
 		/// Reads a <see cref="short"/> from the <see cref="ByteArray"/> specified
@@ -203,9 +203,9 @@ namespace FastCgi.Protocol
 		/// <param name="data"></param>
 		/// <param name="offset"></param>
 		/// <returns></returns>
-        public static ushort ReadUint16(byte[] data, int offset)
-        {
-            return (ushort)((data[offset] << 8) + data[offset + 1]);
-        }
-    }
+		public static ushort ReadUint16(byte[] data, int offset)
+		{
+			return (ushort)((data[offset] << 8) + data[offset + 1]);
+		}
+	}
 }

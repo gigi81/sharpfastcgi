@@ -18,8 +18,10 @@ namespace FastCgi.Test
 	
 	internal class SimpleTcpServer : TcpServer
 	{
+		public const int DefaultPort = 9000;
+
 		public SimpleTcpServer()
-			: this(9000)
+			: this(DefaultPort)
 		{
 		}
 

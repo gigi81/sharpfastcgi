@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 //*****************************************************************************/
 // Copyright (c) 2012 Luigi Grilli
 //
@@ -30,45 +30,45 @@ using System.Net.Sockets;
 
 namespace FastCgi.Tcp
 {
-    public abstract class TcpServer
-    {
-        private TcpListener _listener;
+	public abstract class TcpServer
+	{
+		private TcpListener _listener;
 
-        public TcpServer(int port)
-        {
-            _listener = new TcpListener(port);
-        }
+		public TcpServer(int port)
+		{
+			_listener = new TcpListener(port);
+		}
 
-        public void Start()
-        {
-            _listener.Start();
-            _listener.BeginAcceptTcpClient(this.AcceptConnection, null);
-        }
+		public void Start()
+		{
+			_listener.Start();
+			_listener.BeginAcceptTcpClient(this.AcceptConnection, null);
+		}
 
-        private void AcceptConnection(IAsyncResult result)
-        {
-            TcpClient client;
+		private void AcceptConnection(IAsyncResult result)
+		{
+			TcpClient client;
 
-            try
-            {
-                client = _listener.EndAcceptTcpClient(result);
-            }
-            catch (Exception ex)
-            {
-                client = null;
-            }
+			try
+			{
+				client = _listener.EndAcceptTcpClient(result);
+			}
+			catch (Exception ex)
+			{
+				client = null;
+			}
 
-            _listener.BeginAcceptTcpClient(this.AcceptConnection, null);
+			_listener.BeginAcceptTcpClient(this.AcceptConnection, null);
 
-            TcpLayer tcpLayer = new TcpLayer(client);
-            this.CreateChannel(tcpLayer);
-            tcpLayer.Run();
-        }
+			TcpLayer tcpLayer = new TcpLayer(client);
+			this.CreateChannel(tcpLayer);
+			tcpLayer.Run();
+		}
 
 		/// <summary>
 		/// Creates a new FastCgiChannel
 		/// </summary>
 		/// <param name="tcpLayer"></param>
-        protected abstract void CreateChannel(TcpLayer tcpLayer);
-    }
+		protected abstract void CreateChannel(TcpLayer tcpLayer);
+	}
 }

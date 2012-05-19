@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 //*****************************************************************************/
 // Copyright (c) 2012 Luigi Grilli
 //
@@ -30,33 +30,32 @@ using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
 
 namespace FastCgi.Tcp
 {
-    public class TcpLayer : ILowerLayer
-    {
-        private TcpClient _client;
+	public class TcpLayer : ILowerLayer
+	{
+		private TcpClient _client;
 
-        byte[] _receiveBuffer = new byte[FastCgi.Protocol.Consts.SuggestedBufferSize];
-        byte[] _sendBuffer = new byte[FastCgi.Protocol.Consts.SuggestedBufferSize];
+		byte[] _receiveBuffer = new byte[FastCgi.Protocol.Consts.SuggestedBufferSize];
+		byte[] _sendBuffer = new byte[FastCgi.Protocol.Consts.SuggestedBufferSize];
 
-        public TcpLayer(TcpClient client)
-        {
-            _client = client;
-        }
+		public TcpLayer(TcpClient client)
+		{
+			_client = client;
+		}
 
 		/// <summary>
 		/// Upper layer to send data received from tcp channel
 		/// </summary>
-        public IUpperLayer UpperLayer { get; set; }
+		public IUpperLayer UpperLayer { get; set; }
 
-        public void Run()
-        {
-            while (_client.Connected)
-            {
+		public void Run()
+		{
+			while (_client.Connected)
+			{
 				int read = 0;
 
 				try
 				{
 					//blocking call
-					read = 0;
 					read = _client.GetStream().Read(_receiveBuffer, 0, _receiveBuffer.Length);
 				}
 				catch (Exception ex)
@@ -66,22 +65,27 @@ namespace FastCgi.Tcp
 
 				if (read > 0)
 					this.UpperLayer.Receive(new ByteArray(_receiveBuffer, read));
-            }
-        }
+			}
+		}
 
-        public void Send(ByteArray data)
-        {
-            lock (_client)
-            {
-                data.CopyTo(_sendBuffer, 0);
-                _client.GetStream().Write(_sendBuffer, 0, data.Count);
-                _client.GetStream().Flush();
-            }
-        }
+		public void Send(ByteArray data)
+		{
+			//the upper layer should never send a packet larger than the buffer size
+			//to be sure we check it and throw an exception in that case
+			if (data.Count > _sendBuffer.Length)
+				throw new InvalidOperationException("Packet is bigger than buffer size");
 
-        public void Close()
-        {
-            _client.Close();
-        }
-    }
+			lock (_client)
+			{
+				data.CopyTo(_sendBuffer, 0);
+				_client.GetStream().Write(_sendBuffer, 0, data.Count);
+				_client.GetStream().Flush();
+			}
+		}
+
+		public void Close()
+		{
+			_client.Close();
+		}
+	}
 }

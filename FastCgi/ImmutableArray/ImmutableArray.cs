@@ -263,9 +263,7 @@ namespace FastCgi.ImmutableArray
 		public T[] ToArray()
 		{
 			T[] ret = new T[this.Count];
-			for (int i = 0; i < this.Count; i++)
-				ret[i] = this[i];
-
+			this.CopyTo(ret, 0);
 			return ret;
 		}
 		#endregion
@@ -492,11 +490,18 @@ namespace FastCgi.ImmutableArray
 		#endregion
 
 		#region ICollection Membri di
-
+		/// <summary>
+		/// Copy the data from this immutable array to the mutable array specified at the offset specified
+		/// </summary>
+		/// <param name="array">Destination array to copy data to</param>
+		/// <param name="index">Offset of the destination array where to start copying data</param>
 		public void CopyTo(Array array, int index)
 		{
-			//TODO: to be implemented more efficiently
-			Array.Copy(this.ToArray(), 0, array, index, this.Count);
+			foreach (var source in _arrays)
+			{
+				source.CopyTo(array, index);
+				index += source.Length;
+			}
 		}
 
 		public bool IsSynchronized

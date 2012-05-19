@@ -27,6 +27,8 @@ using System.Collections.Generic;
 using System.Web;
 using System.Text;
 using System.IO;
+using System.Linq;
+using Microsoft.Win32.SafeHandles;
 using FastCgi.Protocol;
 
 namespace FastCgi.AspNet
@@ -121,7 +123,15 @@ namespace FastCgi.AspNet
 
 		public override void SendResponseFromFile(IntPtr handle, long offset, long length)
 		{
-			//TODO: implement me!
+			using (SafeFileHandle sfh = new SafeFileHandle(handle, true))
+			{
+				using (Stream s = new FileStream(sfh, FileAccess.Read))
+				{
+					byte[] buffer = new byte[length];
+					int read = s.Read(buffer, (int)offset, buffer.Length);
+					_request.OutputStream.Write(buffer, 0, read);
+				}
+			}
 		}
 
 		public override void SendResponseFromFile(string filename, long offset, long length)
@@ -156,8 +166,15 @@ namespace FastCgi.AspNet
 
 		public override string[][] GetUnknownRequestHeaders()
 		{
-			//TODO: implement me
-			return new string[0][];
+			return _request.Parameters
+						.Where(p => p.Name.StartsWith("HTTP_"))
+						.Where(p => !IsKnownRequestHeader(ParameterNameToHeaderName(p.Name)))
+						.Select(p => new string[] { p.Name, p.Value }).ToArray();
+		}
+
+		public static bool IsKnownRequestHeader(string header)
+		{
+			return GetKnownRequestHeaderIndex(header) >= 0;
 		}
 
 		public override string GetKnownRequestHeader(int index)
@@ -177,18 +194,26 @@ namespace FastCgi.AspNet
 
 		public override string GetFilePathTranslated()
 		{
-			return _request.PhysicalPath + GetFilePath();
+			return _request.PhysicalPath + this.GetFilePath();
 		}
 
 		public override string GetPathInfo()
 		{
-			//TODO: implement me
-			return String.Empty;
+			//WARNING: the webserver must be configured to set the PATH_INFO fastcgi parameter
+			return _request.Parameters.GetValue("PATH_INFO") ?? String.Empty;
 		}
 
 		private string HeaderNameToParameterName(string headerName)
 		{
 			return "HTTP_" + headerName.ToUpper().Replace('-', '_');
+		}
+
+		private string ParameterNameToHeaderName(string parameterName)
+		{
+			if (!parameterName.StartsWith("HTTP_"))
+				throw new ArgumentException("parameterName");
+
+			return parameterName.Substring(5).Replace('_', '-');
 		}
 	}
 }
