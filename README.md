@@ -11,3 +11,10 @@ the ones that usually are implemented with an HttpListener.
 With this implementation is possible for example to host an ASP.NET application (also MVC)
 with and Nginx web-server on both Windows and Linux.
 
+Example (Nginx)
+============
+You can run the first example/test following this procedure:
+
+- under Windows run nginx.exe included in the Examples folder or under Linux run nginx with the configuration supplied with the Windows example
+- start FastCgi.Test exe within visual studio or from a command prompt (in this case you will need to build it first)
+- with a browser goto http://localhost:8080/info.aspx or http://localhost:8080/test.aspx
