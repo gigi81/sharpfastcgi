@@ -9,18 +9,18 @@ using FastCgi.AspNet;
 
 namespace FastCgi.Test
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
+	class Program
+	{
+		static void Main(string[] args)
+		{
 			string path = Path.Combine(Directory.GetCurrentDirectory(), "Root");
-			SimpleServer server = (SimpleServer)ApplicationHost.CreateApplicationHost(typeof(SimpleServer), "/simple", path);
-            server.Start();
+			SimpleServer server = (SimpleServer)ApplicationHost.CreateApplicationHost(typeof(SimpleServer), "/", path);
+			server.Start();
 
-            while (true)
-            {
-                System.Threading.Thread.Sleep(1000);
-            }
-        }
-    }
+			while (true)
+			{
+				System.Threading.Thread.Sleep(1000);
+			}
+		}
+	}
 }

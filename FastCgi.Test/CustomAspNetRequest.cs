@@ -12,7 +12,8 @@ namespace FastCgi.Test
 		public CustomAspNetRequest(ushort id, BeginRequestMessageBody body)
 			: base(id, body)
 		{
-			this.VirtualPath = "/simple";
+			//must be the same values used when calling ApplicationHost.CreateApplicationHost
+			this.VirtualPath = "/";
 			this.PhysicalPath = Path.Combine(Directory.GetCurrentDirectory(), "Root");
 		}
 	}
