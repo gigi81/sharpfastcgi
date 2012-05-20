@@ -26,25 +26,59 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 using System.Net.Sockets;
 
 namespace FastCgi.Tcp
 {
+	/// <summary>
+	/// TcpServer to listen for incoming fastcgi connections
+	/// </summary>
 	public abstract class TcpServer
 	{
 		private TcpListener _listener;
 
+		/// <summary>
+		/// Creates a new TcpServer listening on 127.0.0.1 on the port specified
+		/// </summary>
+		/// <param name="port">TCP/IP port to listen for incoming connections</param>
 		public TcpServer(int port)
+			: this(IPAddress.Loopback /* Ipv4 */, port)
 		{
-			_listener = new TcpListener(port);
 		}
 
+		/// <summary>
+		/// Creates a new TcpServer listening on the address and port specified
+		/// </summary>
+		/// <param name="address">Address to listen for incoming connections</param>
+		/// <param name="port">TCP/IP port to listen for incoming connections</param>
+		public TcpServer(IPAddress address, int port)
+		{
+			_listener = new TcpListener(address, port);
+		}
+
+		/// <summary>
+		/// Starts listening for incoming connections
+		/// </summary>
 		public void Start()
 		{
 			_listener.Start();
 			_listener.BeginAcceptTcpClient(this.AcceptConnection, null);
 		}
 
+		/// <summary>
+		/// Stops listening for incoming connections
+		/// </summary>
+		public void Stop()
+		{
+			_listener.Stop();
+		}
+
+		/// <summary>
+		/// Asyncronous callback method to receive incoming connections
+		/// Each connection will have it's own thread.
+		/// </summary>
+		/// <param name="result">Asyncronous result</param>
 		private void AcceptConnection(IAsyncResult result)
 		{
 			TcpClient client;
@@ -68,7 +102,7 @@ namespace FastCgi.Tcp
 		/// <summary>
 		/// Creates a new FastCgiChannel
 		/// </summary>
-		/// <param name="tcpLayer"></param>
+		/// <param name="tcpLayer">Lower <see cref="TcpLayer"/> used to communicate with the web server</param>
 		protected abstract void CreateChannel(TcpLayer tcpLayer);
 	}
 }
