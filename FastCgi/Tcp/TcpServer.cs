@@ -36,6 +36,9 @@ namespace FastCgi.Tcp
 	/// </summary>
 	public abstract class TcpServer
 	{
+		public event EventHandler<UnhandledExceptionEventArgs> AcceptError;
+		public event EventHandler<UnhandledExceptionEventArgs> ChannelError;
+
 		private TcpListener _listener;
 
 		/// <summary>
@@ -62,6 +65,8 @@ namespace FastCgi.Tcp
 		/// </summary>
 		public void Start()
 		{
+			this.IsListening = true;
+
 			_listener.Start();
 			_listener.BeginAcceptTcpClient(this.AcceptConnection, null);
 		}
@@ -71,8 +76,11 @@ namespace FastCgi.Tcp
 		/// </summary>
 		public void Stop()
 		{
+			this.IsListening = false;
 			_listener.Stop();
 		}
+
+		public bool IsListening { get; private set; }
 
 		/// <summary>
 		/// Asyncronous callback method to receive incoming connections
@@ -81,7 +89,7 @@ namespace FastCgi.Tcp
 		/// <param name="result">Asyncronous result</param>
 		private void AcceptConnection(IAsyncResult result)
 		{
-			TcpClient client;
+			TcpClient client = null;
 
 			try
 			{
@@ -89,14 +97,29 @@ namespace FastCgi.Tcp
 			}
 			catch (Exception ex)
 			{
-				client = null;
+				this.OnAcceptError(new UnhandledExceptionEventArgs(ex, false));
 			}
 
-			_listener.BeginAcceptTcpClient(this.AcceptConnection, null);
+			if(this.IsListening)
+				_listener.BeginAcceptTcpClient(this.AcceptConnection, null);
 
-			TcpLayer tcpLayer = new TcpLayer(client);
-			this.CreateChannel(tcpLayer);
-			tcpLayer.Run();
+			//this is a blocking call
+			if (client != null)
+				this.RunChannel(client);
+		}
+
+		private void RunChannel(TcpClient client)
+		{
+			try
+			{
+				TcpLayer tcpLayer = new TcpLayer(client);
+				this.CreateChannel(tcpLayer);
+				tcpLayer.Run();
+			}
+			catch (Exception ex)
+			{
+				this.OnChannelError(new UnhandledExceptionEventArgs(ex, false));
+			}
 		}
 
 		/// <summary>
@@ -104,5 +127,17 @@ namespace FastCgi.Tcp
 		/// </summary>
 		/// <param name="tcpLayer">Lower <see cref="TcpLayer"/> used to communicate with the web server</param>
 		protected abstract void CreateChannel(TcpLayer tcpLayer);
+
+		protected virtual void OnAcceptError(UnhandledExceptionEventArgs args)
+		{
+			if (this.AcceptError != null)
+				this.AcceptError(this, args);
+		}
+
+		protected virtual void OnChannelError(UnhandledExceptionEventArgs args)
+		{
+			if (this.ChannelError != null)
+				this.ChannelError(this, args);
+		}
 	}
 }

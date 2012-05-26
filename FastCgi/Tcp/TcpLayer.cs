@@ -32,14 +32,23 @@ namespace FastCgi.Tcp
 {
 	public class TcpLayer : ILowerLayer
 	{
+		public event EventHandler<UnhandledExceptionEventArgs> RunError;
+
 		private TcpClient _client;
 
-		byte[] _receiveBuffer = new byte[FastCgi.Protocol.Consts.SuggestedBufferSize];
-		byte[] _sendBuffer = new byte[FastCgi.Protocol.Consts.SuggestedBufferSize];
+		byte[] _receiveBuffer;
+		byte[] _sendBuffer;
 
 		public TcpLayer(TcpClient client)
+			: this(client, Consts.SuggestedBufferSize, Consts.SuggestedBufferSize)
+		{
+		}
+
+		public TcpLayer(TcpClient client, int recvBufferSize, int sendBufferSize)
 		{
 			_client = client;
+			_receiveBuffer = new byte[recvBufferSize];
+			_sendBuffer = new byte[sendBufferSize];
 		}
 
 		/// <summary>
@@ -47,6 +56,10 @@ namespace FastCgi.Tcp
 		/// </summary>
 		public IUpperLayer UpperLayer { get; set; }
 
+		/// <summary>
+		/// Continuously calls the <see cref="TcpClient.Read"/> method of the <see cref="TcpClient"/> while the socket is connected
+		/// </summary>
+		/// <remarks>This is a blocking call. When exiting this call the socket will be already closed</remarks>
 		public void Run()
 		{
 			while (_client.Connected)
@@ -57,35 +70,47 @@ namespace FastCgi.Tcp
 				{
 					//blocking call
 					read = _client.GetStream().Read(_receiveBuffer, 0, _receiveBuffer.Length);
+					if (read > 0)
+						this.UpperLayer.Receive(new ByteArray(_receiveBuffer, read));
 				}
 				catch (Exception ex)
 				{
-					//TODO: handle better
+					this.OnRunError(new UnhandledExceptionEventArgs(ex, false));
 				}
-
-				if (read > 0)
-					this.UpperLayer.Receive(new ByteArray(_receiveBuffer, read));
 			}
+
+			_client.Close();
 		}
 
+		/// <summary>
+		/// Sends data to the network
+		/// </summary>
+		/// <param name="data">Data to send</param>
 		public void Send(ByteArray data)
 		{
-			//the upper layer should never send a packet larger than the buffer size
-			//to be sure we check it and throw an exception in that case
-			if (data.Count > _sendBuffer.Length)
-				throw new InvalidOperationException("Packet is bigger than buffer size");
-
 			lock (_client)
 			{
-				data.CopyTo(_sendBuffer, 0);
-				_client.GetStream().Write(_sendBuffer, 0, data.Count);
-				_client.GetStream().Flush();
+				while (data.Count > 0)
+				{
+					int length = Math.Min(data.Count, _sendBuffer.Length);
+
+					data.CopyTo(_sendBuffer, 0, length);
+					_client.GetStream().Write(_sendBuffer, 0, data.Count);
+					_client.GetStream().Flush();
+					data = data.SubArray(length);
+				}
 			}
 		}
 
 		public void Close()
 		{
 			_client.Close();
+		}
+
+		protected virtual void OnRunError(UnhandledExceptionEventArgs args)
+		{
+			if (this.RunError != null)
+				this.RunError(this, args);
 		}
 	}
 }

@@ -17,10 +17,10 @@ namespace FastCgi.Test
 			SimpleServer server = (SimpleServer)ApplicationHost.CreateApplicationHost(typeof(SimpleServer), "/", path);
 			server.Start();
 
-			while (true)
-			{
-				System.Threading.Thread.Sleep(1000);
-			}
+			Console.WriteLine("Press any key to stop the fastcgi server");
+			Console.Read();
+
+			server.Stop();
 		}
 	}
 }

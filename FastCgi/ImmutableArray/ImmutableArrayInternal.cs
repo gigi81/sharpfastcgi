@@ -137,7 +137,12 @@ namespace FastCgi.ImmutableArray
 
 		public void CopyTo(Array array, int index)
 		{
-			Array.Copy(this.Data, this.Offset, array, index, this.Length);
+			this.CopyTo(array, index, this.Length);
+		}
+
+		public void CopyTo(Array array, int index, int length)
+		{
+			Array.Copy(this.Data, this.Offset, array, index, length);
 		}
 		#endregion
 

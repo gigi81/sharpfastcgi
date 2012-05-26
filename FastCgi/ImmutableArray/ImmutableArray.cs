@@ -491,16 +491,33 @@ namespace FastCgi.ImmutableArray
 
 		#region ICollection Membri di
 		/// <summary>
-		/// Copy the data from this immutable array to the mutable array specified at the offset specified
+		/// Copy all the data from this immutable array to the mutable array specified at the offset specified
 		/// </summary>
 		/// <param name="array">Destination array to copy data to</param>
 		/// <param name="index">Offset of the destination array where to start copying data</param>
 		public void CopyTo(Array array, int index)
 		{
+			this.CopyTo(array, index, this.Count);
+		}
+
+		/// <summary>
+		/// Copy the number of elements specified from this immutable array to the mutable array specified at the offset specified
+		/// </summary>
+		/// <param name="array">Destination array to copy data to</param>
+		/// <param name="index">Offset of the destination array where to start copying data</param>
+		/// <param name="length">Number of elements to copy</param>
+		public void CopyTo(Array array, int index, int length)
+		{
 			foreach (var source in _arrays)
 			{
-				source.CopyTo(array, index);
-				index += source.Length;
+				if (length <= 0)
+					break;
+
+				int part = Math.Min(source.Length, length);
+
+				source.CopyTo(array, index, part);
+				index += part;
+				length -= part;
 			}
 		}
 

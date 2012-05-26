@@ -14,6 +14,11 @@ namespace FastCgi.Test
 		{
 			_server.Start();
 		}
+
+		public void Stop()
+		{
+			_server.Stop();
+		}
 	}
 	
 	internal class SimpleTcpServer : TcpServer
