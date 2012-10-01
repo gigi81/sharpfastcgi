@@ -18,3 +18,7 @@ You can run the first example/test following this procedure:
 - under Windows run nginx.exe included in the Examples folder or under Linux run nginx with the configuration supplied with the Windows example
 - start FastCgi.Test exe within visual studio or from a command prompt (in this case you will need to build it first)
 - with a browser goto http://localhost:8080/info.aspx or http://localhost:8080/test.aspx
+
+Documentation
+============
+You can also read this article I wroute about this library so you can have a deeper understanding on how it works: http://www.codeproject.com/Articles/388040/FastCGI-NET-and-ASP-NET-self-hosting
