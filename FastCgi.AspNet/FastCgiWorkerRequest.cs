@@ -125,10 +125,10 @@ namespace FastCgi.AspNet
 		{
 			using (SafeFileHandle sfh = new SafeFileHandle(handle, true))
 			{
-				using (Stream s = new FileStream(sfh, FileAccess.Read))
+				using (Stream stream = new FileStream(sfh, FileAccess.Read))
 				{
 					byte[] buffer = new byte[length];
-					int read = s.Read(buffer, (int)offset, buffer.Length);
+					int read = stream.Read(buffer, (int)offset, buffer.Length);
 					_request.OutputStream.Write(buffer, 0, read);
 				}
 			}
@@ -136,10 +136,10 @@ namespace FastCgi.AspNet
 
 		public override void SendResponseFromFile(string filename, long offset, long length)
 		{
-			using (Stream s = File.OpenRead(filename))
+			using (Stream stream = File.OpenRead(filename))
 			{
 				byte[] buffer = new byte[length];
-				int read = s.Read(buffer, (int)offset, buffer.Length);
+				int read = stream.Read(buffer, (int)offset, buffer.Length);
 				_request.OutputStream.Write(buffer, 0, read);
 			}
 		}
@@ -189,7 +189,7 @@ namespace FastCgi.AspNet
 
 		public override string GetFilePath()
 		{
-			return _request.Parameters.GetValue("SCRIPT_NAME").Replace('/', '\\');
+			return _request.Parameters.GetValue("SCRIPT_NAME").Replace('/', Path.DirectorySeparatorChar);
 		}
 
 		public override string GetFilePathTranslated()

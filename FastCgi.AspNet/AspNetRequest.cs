@@ -58,7 +58,7 @@ namespace FastCgi.AspNet
 			if (this.HeaderSent)
 				throw new InvalidOperationException("Cannot set status on a response that has already been flushed");
 
-			this.Status = String.Format("{0} {1} {2}", this.Parameters.GetValue("SERVER_PROTOCOL"), statusCode, statusDescription);
+			this.Status = String.Format("Status: {0} {1}", statusCode, statusDescription);
 		}
 
 		public void SetHeader(string name, string value)
@@ -97,7 +97,7 @@ namespace FastCgi.AspNet
 		{
 			StringBuilder builder = new StringBuilder();
 
-			if (String.IsNullOrEmpty(this.Status))
+			if (!String.IsNullOrEmpty(this.Status))
 			{
 				builder.Append(this.Status);
 				builder.Append("\r\n");

@@ -108,12 +108,12 @@
   <ItemGroup>
     <None Include="Root\info.aspx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>ASPXCodeBehind</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Root\Trace.aspx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>ASPXCodeBehind</SubType>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
