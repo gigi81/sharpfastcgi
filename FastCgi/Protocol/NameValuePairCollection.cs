@@ -50,7 +50,9 @@ namespace FastCgi.Protocol
 
 		private void ReadCollection(BinaryReader reader)
 		{
-			while (true)
+		    var stream = reader.BaseStream;
+
+            while (stream.Position < stream.Length /* check for stream EOF */)
 			{
 				try
 				{

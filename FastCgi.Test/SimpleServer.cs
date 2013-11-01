@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Remoting;
+using System.Runtime.Remoting.Lifetime;
+using System.Security.Permissions;
 using System.Text;
+using System.Threading;
 using FastCgi.Tcp;
 
 namespace FastCgi.Test
 {
-	public class SimpleServer : MarshalByRefObject
+    public class SimpleServer : CrossAppDomainObject
 	{
-		private SimpleTcpServer _server = new SimpleTcpServer();
+		private readonly SimpleTcpServer _server = new SimpleTcpServer();
 
 		public void Start()
 		{
@@ -35,52 +41,113 @@ namespace FastCgi.Test
 		{
 		}
 
-		protected override void CreateChannel(TcpLayer tcpLayer)
+		protected override IChannel CreateChannel(TcpLayer tcpLayer)
 		{
-			//new SimpleChannelStack(tcpLayer);
-			new CustomAspNetChannelStack(tcpLayer);
+			//return new SimpleChannelStack(tcpLayer);
+			return new CustomAspNetChannelStack(tcpLayer);
 		}
 
-		class SimpleChannelStack
+		private class SimpleChannelStack : IChannel
 		{
-			private TcpLayer _tcpLayer;
+			private readonly TcpLayer _tcpLayer;
 
 			public SimpleChannelStack(TcpLayer tcpLayer)
 			{
 				_tcpLayer = tcpLayer;
-
-				SimpleChannel channel = new SimpleChannel();
-				channel.LowerLayer = tcpLayer;
-				tcpLayer.UpperLayer = channel;
-
-				channel.RequestEnded += new EventHandler(channel_RequestEnded);
+			    _tcpLayer.UpperLayer = this.CreateUpperLayer(tcpLayer);
 			}
 
-			void channel_RequestEnded(object sender, EventArgs e)
+            private SimpleChannel CreateUpperLayer(TcpLayer tcpLayer)
+            {
+                var channel = new SimpleChannel();
+                channel.LowerLayer = tcpLayer;
+                channel.RequestEnded += new EventHandler(RequestEnded);
+                return channel;
+            }
+
+			private void RequestEnded(object sender, EventArgs e)
 			{
 				_tcpLayer.Close();
 			}
+
+            public void Run()
+            {
+                _tcpLayer.Run();
+            }
 		}
 
-		class CustomAspNetChannelStack
+        private class CustomAspNetChannelStack : IChannel
 		{
-			private TcpLayer _tcpLayer;
+			private readonly TcpLayer _tcpLayer;
 
 			public CustomAspNetChannelStack(TcpLayer tcpLayer)
 			{
 				_tcpLayer = tcpLayer;
-
-				CustomAspNetChannel channel = new CustomAspNetChannel();
-				channel.LowerLayer = tcpLayer;
-				tcpLayer.UpperLayer = channel;
-
-				channel.RequestEnded += new EventHandler(channel_RequestEnded);
+				_tcpLayer.UpperLayer = this.CreateUpperLayer(tcpLayer);
 			}
 
-			void channel_RequestEnded(object sender, EventArgs e)
+            private CustomAspNetChannel CreateUpperLayer(TcpLayer tcpLayer)
+            {
+                var channel = new CustomAspNetChannel();
+                channel.LowerLayer = tcpLayer;
+                channel.RequestEnded += new EventHandler(RequestEnded);
+                return channel;
+            }
+
+			private void RequestEnded(object sender, EventArgs e)
 			{
 				_tcpLayer.Close();
 			}
+
+            public void Run()
+            {
+                _tcpLayer.Run();
+            }
 		}
 	}
+
+    /// <summary>
+    /// Enables access to objects across application domain boundaries.
+    /// Contrary to MarshalByRefObject, the lifetime is managed by the client.
+    /// </summary>
+    public abstract class CrossAppDomainObject : MarshalByRefObject
+    {
+        /// <summary>
+        /// Count of remote references to this object.
+        /// </summary>
+        [NonSerialized]
+        private int refCount;
+
+        /// <summary>
+        /// Disables LifeTime service : object has an infinite life time until it's Disconnected.
+        /// </summary>
+        /// <returns>null.</returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public sealed override object InitializeLifetimeService()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Connect a proxy to the object.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void AppDomainConnect()
+        {
+            int value = Interlocked.Increment(ref refCount);
+            Debug.Assert(value > 0);
+        }
+
+        /// <summary>
+        /// Disconnects a proxy from the object.
+        /// When all proxy are disconnected, the object is disconnected from RemotingServices.
+        /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void AppDomainDisconnect()
+        {
+            Debug.Assert(refCount > 0);
+            if (Interlocked.Decrement(ref refCount) == 0)
+                RemotingServices.Disconnect(this);
+        }
+    }
 }

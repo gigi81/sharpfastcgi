@@ -23,19 +23,15 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Web;
-using System.Text;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32.SafeHandles;
-using FastCgi.Protocol;
 
 namespace FastCgi.AspNet
 {
 	public class FastCgiWorkerRequest : System.Web.Hosting.SimpleWorkerRequest
 	{
-		private AspNetRequest _request;
+		private readonly AspNetRequest _request;
 
 		public FastCgiWorkerRequest(AspNetRequest request)
 			: base(String.Empty, String.Empty, null)
@@ -103,7 +99,7 @@ namespace FastCgi.AspNet
 
 		public override void SendKnownResponseHeader(int index, string value)
 		{
-			_request.SetHeader(HttpWorkerRequest.GetKnownResponseHeaderName(index), value);
+			_request.SetHeader(GetKnownResponseHeaderName(index), value);
 		}
 
 		public override void SendResponseFromMemory(byte[] data, int length)
@@ -167,9 +163,10 @@ namespace FastCgi.AspNet
 		public override string[][] GetUnknownRequestHeaders()
 		{
 			return _request.Parameters
-						.Where(p => p.Name.StartsWith("HTTP_"))
-						.Where(p => !IsKnownRequestHeader(ParameterNameToHeaderName(p.Name)))
-						.Select(p => new string[] { p.Name, p.Value }).ToArray();
+						   .Where(p => p.Name.StartsWith("HTTP_"))
+						   .Where(p => !IsKnownRequestHeader(ParameterNameToHeaderName(p.Name)))
+						   .Select(p => new[] { p.Name, p.Value })
+                           .ToArray();
 		}
 
 		public static bool IsKnownRequestHeader(string header)

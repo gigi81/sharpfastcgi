@@ -34,10 +34,10 @@ namespace FastCgi.Tcp
 	{
 		public event EventHandler<UnhandledExceptionEventArgs> RunError;
 
-		private TcpClient _client;
+		private readonly TcpClient _client;
 
-		byte[] _receiveBuffer;
-		byte[] _sendBuffer;
+	    private readonly byte[] _receiveBuffer;
+	    private readonly byte[] _sendBuffer;
 
 		public TcpLayer(TcpClient client)
 			: this(client, Consts.SuggestedBufferSize, Consts.SuggestedBufferSize)
@@ -57,19 +57,17 @@ namespace FastCgi.Tcp
 		public IUpperLayer UpperLayer { get; set; }
 
 		/// <summary>
-		/// Continuously calls the <see cref="TcpClient.Read"/> method of the <see cref="TcpClient"/> while the socket is connected
+        /// Continuously calls the <see cref="TcpClient.GetStream().Read"/> method of the <see cref="TcpClient"/> while the socket is connected
 		/// </summary>
 		/// <remarks>This is a blocking call. When exiting this call the socket will be already closed</remarks>
 		public void Run()
 		{
 			while (_client.Connected)
 			{
-				int read = 0;
-
 				try
 				{
 					//blocking call
-					read = _client.GetStream().Read(_receiveBuffer, 0, _receiveBuffer.Length);
+					int read = _client.GetStream().Read(_receiveBuffer, 0, _receiveBuffer.Length);
 					if (read > 0)
 						this.UpperLayer.Receive(new ByteArray(_receiveBuffer, read));
 				}

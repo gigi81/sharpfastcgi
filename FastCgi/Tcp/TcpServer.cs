@@ -39,13 +39,13 @@ namespace FastCgi.Tcp
 		public event EventHandler<UnhandledExceptionEventArgs> AcceptError;
 		public event EventHandler<UnhandledExceptionEventArgs> ChannelError;
 
-		private TcpListener _listener;
+		private readonly TcpListener _listener;
 
 		/// <summary>
 		/// Creates a new TcpServer listening on 127.0.0.1 on the port specified
 		/// </summary>
 		/// <param name="port">TCP/IP port to listen for incoming connections</param>
-		public TcpServer(int port)
+		protected TcpServer(int port)
 			: this(IPAddress.Loopback /* Ipv4 */, port)
 		{
 		}
@@ -55,7 +55,7 @@ namespace FastCgi.Tcp
 		/// </summary>
 		/// <param name="address">Address to listen for incoming connections</param>
 		/// <param name="port">TCP/IP port to listen for incoming connections</param>
-		public TcpServer(IPAddress address, int port)
+		protected TcpServer(IPAddress address, int port)
 		{
 			_listener = new TcpListener(address, port);
 		}
@@ -112,9 +112,8 @@ namespace FastCgi.Tcp
 		{
 			try
 			{
-				TcpLayer tcpLayer = new TcpLayer(client);
-				this.CreateChannel(tcpLayer);
-				tcpLayer.Run();
+				var channel = this.CreateChannel(new TcpLayer(client));
+				channel.Run();
 			}
 			catch (Exception ex)
 			{
@@ -126,7 +125,7 @@ namespace FastCgi.Tcp
 		/// Creates a new FastCgiChannel
 		/// </summary>
 		/// <param name="tcpLayer">Lower <see cref="TcpLayer"/> used to communicate with the web server</param>
-		protected abstract void CreateChannel(TcpLayer tcpLayer);
+		protected abstract IChannel CreateChannel(TcpLayer tcpLayer);
 
 		protected virtual void OnAcceptError(UnhandledExceptionEventArgs args)
 		{
@@ -140,4 +139,9 @@ namespace FastCgi.Tcp
 				this.ChannelError(this, args);
 		}
 	}
+
+    public interface IChannel
+    {
+        void Run();
+    }
 }
