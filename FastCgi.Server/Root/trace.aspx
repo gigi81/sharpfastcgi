@@ -1,1 +1,1 @@
-﻿<%@ Page Trace="true"  Language="C#" ContentType="text/html" ResponseEncoding="utf-8" %>
+﻿<%@ Page Trace="true" EnableSessionState="true"  Language="C#" ContentType="text/html" ResponseEncoding="utf-8" %>
