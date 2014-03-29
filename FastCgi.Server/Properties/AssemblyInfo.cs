@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("FastCgi.AspNet")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("FastCgi.Server")]
+[assembly: AssemblyDescription("FastCgi ASP.NET Server")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FastCgi.AspNet")]
-[assembly: AssemblyCopyright("Copyright © Luigi Grilli 2012 - 2014")]
+[assembly: AssemblyProduct("FastCgi.Server")]
+[assembly: AssemblyCopyright("Copyright © Luigi Grilli 2011 - 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("63cb8c6d-e5af-4aab-b74d-76068aa6af32")]
+[assembly: Guid("2f3dd7f0-7ef8-47b7-afc6-64ec73c3ea9a")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -118,15 +118,21 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir "$(TargetDir)Root\bin"
-copy "$(TargetDir)*.dll" "$(TargetDir)Root\bin\*.dll"
-copy "$(TargetDir)*.exe" "$(TargetDir)Root\bin\*.exe"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
   -->
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <WebBinaries Include="$(TargetDir)*.dll" />
+    </ItemGroup>
+    <ItemGroup>
+      <WebBinaries2 Include="$(TargetDir)*.exe" />
+    </ItemGroup>
+    <MakeDir Directories="$(TargetDir)Root\bin" />
+    <Copy SourceFiles="@(WebBinaries)" DestinationFolder="$(TargetDir)Root\bin" />
+    <Copy SourceFiles="@(WebBinaries2)" DestinationFolder="$(TargetDir)Root\bin" />
+  </Target>
 </Project>
