@@ -45,6 +45,7 @@ namespace FastCgi.Server
             var server = FastCgiAspNetServer.CreateApplicationHost(Port, VirtualPath, PhysicalPath);
             server.Start();
 
+			Console.WriteLine ("Listening on port {0}", Port);
             Console.WriteLine("Press any key to stop the fastcgi server");
             Console.ReadKey();
 

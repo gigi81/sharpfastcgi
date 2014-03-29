@@ -9,3 +9,4 @@ TestResults
 /Examples/windows-nginx-1.0.15/logs/access.log
 /Examples/windows-nginx-1.0.15/logs/error.log
 /Examples/windows-nginx-1.0.15/logs/nginx.pid
+*.userprefs
