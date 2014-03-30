@@ -1,7 +1,9 @@
 language: c
  
 install:
-  - sudo apt-get install mono-devel mono-gmcs nunit-console
- 
+  - sudo sh -c "echo 'deb http://download.opensuse.org/repositories/home:/tpokorra:/mono/xUbuntu_13.10/ /' >> /etc/apt/sources.list.d/mono-opt.list"
+  - sudo apt-get update
+  - sudo apt-get install mono-opt
+
 script:
   - xbuild CI.proj
