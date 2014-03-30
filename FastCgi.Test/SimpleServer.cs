@@ -43,8 +43,7 @@ namespace FastCgi.Test
 
 		protected override IChannel CreateChannel(TcpLayer tcpLayer)
 		{
-			//return new SimpleChannelStack(tcpLayer);
-			return new CustomAspNetChannelStack(tcpLayer);
+			return new SimpleChannelStack(tcpLayer);
 		}
 
 		private class SimpleChannelStack : IChannel
@@ -60,35 +59,6 @@ namespace FastCgi.Test
             private SimpleChannel CreateUpperLayer(TcpLayer tcpLayer)
             {
                 var channel = new SimpleChannel();
-                channel.LowerLayer = tcpLayer;
-                channel.RequestEnded += new EventHandler(RequestEnded);
-                return channel;
-            }
-
-			private void RequestEnded(object sender, EventArgs e)
-			{
-				_tcpLayer.Close();
-			}
-
-            public void Run()
-            {
-                _tcpLayer.Run();
-            }
-		}
-
-        private class CustomAspNetChannelStack : IChannel
-		{
-			private readonly TcpLayer _tcpLayer;
-
-			public CustomAspNetChannelStack(TcpLayer tcpLayer)
-			{
-				_tcpLayer = tcpLayer;
-				_tcpLayer.UpperLayer = this.CreateUpperLayer(tcpLayer);
-			}
-
-            private CustomAspNetChannel CreateUpperLayer(TcpLayer tcpLayer)
-            {
-                var channel = new CustomAspNetChannel();
                 channel.LowerLayer = tcpLayer;
                 channel.RequestEnded += new EventHandler(RequestEnded);
                 return channel;

@@ -56,8 +56,6 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomAspNetChannel.cs" />
-    <Compile Include="CustomAspNetRequest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleChannel.cs" />
@@ -76,12 +74,6 @@
       <Project>{A3C516B6-046B-44C2-9387-2D01646589C9}</Project>
       <Name>FastCgi</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Root\test.aspx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>ASPXCodeBehind</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
@@ -105,17 +97,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Root\info.aspx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Root\Trace.aspx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>ASPXCodeBehind</SubType>
-    </None>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
   </PropertyGroup>
@@ -125,14 +106,5 @@
   </Target>
   -->
   <Target Name="AfterBuild">
-    <ItemGroup>
-      <WebBinaries Include="$(TargetDir)*.dll" />
-    </ItemGroup>
-    <ItemGroup>
-      <WebBinaries2 Include="$(TargetDir)*.exe" />
-    </ItemGroup>
-    <MakeDir Directories="$(TargetDir)Root\bin" />
-    <Copy SourceFiles="@(WebBinaries)" DestinationFolder="$(TargetDir)Root\bin" />
-    <Copy SourceFiles="@(WebBinaries2)" DestinationFolder="$(TargetDir)Root\bin" />
   </Target>
 </Project>
