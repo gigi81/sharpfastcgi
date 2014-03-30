@@ -3,7 +3,7 @@ language: c
 install:
   - sudo sh -c "echo 'deb http://download.opensuse.org/repositories/home:/tpokorra:/mono/xUbuntu_13.10/ /' >> /etc/apt/sources.list.d/monodevelop-opt.list"
   - sudo apt-get update
-  - sudo apt-get --force-yes install monodevelop-opt
+  - sudo apt-get --force-yes install monodevelop-opt mono-xbuild
 
 script:
   - xbuild CI.proj
