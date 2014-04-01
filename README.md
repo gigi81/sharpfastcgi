@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/gigi81/sharpfastcgi.svg?branch=master)](https://travis-ci.org/gigi81/sharpfastcgi)
+
 sharpfastcgi
 ============
 
