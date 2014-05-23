@@ -65,10 +65,10 @@ namespace FastCgi.Protocol
 			if ((length & 0x80) == 0)
 				return length;
 
-			return length & 0x7F << 24 +
-					 reader.ReadByte() << 16 +
-					 reader.ReadByte() << 8 +
-					 reader.ReadByte();
+            return ((length & 0x7F) << 24) +
+                   (reader.ReadByte() << 16) +
+			       (reader.ReadByte() << 8) +
+			       (reader.ReadByte());
 		}
 
 		public static byte[] SetLength(int length)
