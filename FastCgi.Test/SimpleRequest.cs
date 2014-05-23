@@ -21,17 +21,22 @@ namespace FastCgi.Test
             {
                 StringBuilder builder = new StringBuilder();
                 
-                builder.Append("Content-Type: text/plain; charset=UTF-8\r\n\r\n");
+                builder.Append("Content-Type: text/html; charset=UTF-8\r\n\r\n");
 
+                builder.Append("<html><body><table>");
                 foreach (NameValuePair param in this.Parameters)
                 {
-                    builder.Append(param.Name.PadRight(30));
-                    builder.Append("= ");
+                    builder.Append("<tr>");
+                    builder.Append("<td>");
+                    builder.Append(param.Name);
+                    builder.Append("</td>");
+                    builder.Append("<td>");
                     builder.Append(param.Value);
-                    builder.Append("\n");
+                    builder.Append("</td>");
+                    builder.Append("</tr>");
                 }
 
-                builder.Append("\r\n\r\n");
+                builder.Append("</table></body></html>");
 
                 byte[] data = Encoding.UTF8.GetBytes(builder.ToString());
                 this.OutputStream.Write(data, 0, data.Length);

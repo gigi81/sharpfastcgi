@@ -13,16 +13,13 @@ namespace FastCgi.Test
 	{
 		static void Main(string[] args)
 		{
-			string path = Path.Combine(Directory.GetCurrentDirectory(), "Root");
-			SimpleServer server = (SimpleServer)ApplicationHost.CreateApplicationHost(typeof(SimpleServer), "/", path);
-            server.AppDomainConnect();
+            SimpleServer server = new SimpleServer();
 			server.Start();
 
 			Console.WriteLine("Press any key to stop the fastcgi server");
             Console.ReadKey();
 
 			server.Stop();
-            server.AppDomainDisconnect();
 		}
 	}
 }
