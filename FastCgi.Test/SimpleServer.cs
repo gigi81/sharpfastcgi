@@ -14,7 +14,12 @@ namespace FastCgi.Test
 {
     public class SimpleServer : CrossAppDomainObject
 	{
-		private readonly SimpleTcpServer _server = new SimpleTcpServer();
+        private readonly SimpleTcpServer _server;
+
+        public SimpleServer(bool keepalive = false)
+        {
+            _server = new SimpleTcpServer(keepalive);
+        }
 
 		public void Start()
 		{
@@ -30,28 +35,38 @@ namespace FastCgi.Test
 	internal class SimpleTcpServer : TcpServer
 	{
 		public const int DefaultPort = 9000;
+        private readonly bool _keepalive = false;
 
-		public SimpleTcpServer()
-			: this(DefaultPort)
+		public SimpleTcpServer(bool keepalive = false)
+			: this(DefaultPort, false)
 		{
 		}
 
-		public SimpleTcpServer(int port)
+		public SimpleTcpServer(int port, bool keepalive)
 			: base(port)
 		{
+            _keepalive = keepalive;
 		}
 
 		protected override IChannel CreateChannel(TcpLayer tcpLayer)
 		{
-			return new SimpleChannelStack(tcpLayer);
+			return new SimpleChannelStack(tcpLayer, _keepalive, this.OnRequestEnded);
 		}
+
+        private void OnRequestEnded()
+        {
+        }
 
 		private class SimpleChannelStack : IChannel
 		{
 			private readonly TcpLayer _tcpLayer;
+            private readonly Action _endedCallback;
+            private readonly bool _keepalive = false;
 
-			public SimpleChannelStack(TcpLayer tcpLayer)
+			public SimpleChannelStack(TcpLayer tcpLayer, bool keepalive, Action endedCallback = null)
 			{
+                _keepalive = keepalive;
+                _endedCallback = endedCallback;
 				_tcpLayer = tcpLayer;
 			    _tcpLayer.UpperLayer = this.CreateUpperLayer(tcpLayer);
 			}
@@ -66,12 +81,17 @@ namespace FastCgi.Test
 
 			private void RequestEnded(object sender, EventArgs e)
 			{
-				_tcpLayer.Close();
+                if(!_keepalive)
+				    _tcpLayer.Close();
+
+                if (_endedCallback != null)
+                    _endedCallback.Invoke();
 			}
 
             public void Run()
             {
                 _tcpLayer.Run();
+                _tcpLayer.Close();
             }
 		}
 	}

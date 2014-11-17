@@ -30,7 +30,7 @@ using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
 
 namespace FastCgi.Tcp
 {
-	public class TcpLayer : ILowerLayer
+	public class TcpLayer : ILowerLayer, IDisposable
 	{
 		public event EventHandler<UnhandledExceptionEventArgs> RunError;
 
@@ -102,7 +102,11 @@ namespace FastCgi.Tcp
 
 		public void Close()
 		{
-			_client.Close();
+            if(_client.Connected)
+            {
+                _client.Client.Disconnect(true);
+                _client.Close();
+            }
 		}
 
 		protected virtual void OnRunError(UnhandledExceptionEventArgs args)
@@ -110,5 +114,10 @@ namespace FastCgi.Tcp
 			if (this.RunError != null)
 				this.RunError(this, args);
 		}
-	}
+
+        public void Dispose()
+        {
+            this.Close();
+        }
+    }
 }
