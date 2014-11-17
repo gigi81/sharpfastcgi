@@ -19,11 +19,12 @@ namespace FastCgi.AspNet
         /// <param name="port">Tcp/ip port where the server will be listening for fastcgi requests</param>
         /// <param name="virtualPath">Virtual path of your ASP.NET application</param>
         /// <param name="physicalPath">Physical path of your ASP.NET application</param>
+        /// <param name="keepConnection">When enabling this option, it will be responsability of the web server to close the connection. Default is false.</param>
         /// <returns></returns>
-        public static FastCgiAspNetServer CreateApplicationHost(int port, string virtualPath, string physicalPath)
+        public static FastCgiAspNetServer CreateApplicationHost(int port, string virtualPath, string physicalPath, bool keepConnection)
         {
             var ret = (FastCgiAspNetServer)ApplicationHost.CreateApplicationHost(typeof(FastCgiAspNetServer), virtualPath, physicalPath);
-            ret.Initialize(port, virtualPath, physicalPath);
+            ret.Initialize(port, virtualPath, physicalPath, keepConnection);
             return ret;
         }
 
@@ -32,9 +33,9 @@ namespace FastCgi.AspNet
             return null; //never expire lease
         }
 
-        internal void Initialize(int port, string virtualPath, string physicalPath)
+        internal void Initialize(int port, string virtualPath, string physicalPath, bool keepConnection)
         {
-            _server = new ServerInternal(port, virtualPath, physicalPath);
+            _server = new ServerInternal(port, virtualPath, physicalPath, keepConnection);
         }
 
         /// <summary>
@@ -56,16 +57,19 @@ namespace FastCgi.AspNet
 	
 	internal class ServerInternal : TcpServer
 	{
-        internal ServerInternal(int port, string virtualPath, string physicalPath)
+        internal ServerInternal(int port, string virtualPath, string physicalPath, bool keepConnection)
 			: base(port)
         {
             this.VirtualPath = virtualPath;
             this.PhysicalPath = physicalPath;
+            this.KeepConnection = keepConnection;
         }
 
         public string VirtualPath { get; private set; }
 
         public string PhysicalPath { get; private set; }
+
+        public bool KeepConnection { get; private set; }
 
 		protected override IChannel CreateChannel(TcpLayer tcpLayer)
 		{
@@ -77,7 +81,7 @@ namespace FastCgi.AspNet
             private readonly ServerInternal _server;
 			private readonly TcpLayer _tcpLayer;
 
-			public CustomAspNetChannelStack(TcpLayer tcpLayer, ServerInternal server)
+            public CustomAspNetChannelStack(TcpLayer tcpLayer, ServerInternal server)
 			{
 			    _server = server;
 				_tcpLayer = tcpLayer;
@@ -94,7 +98,8 @@ namespace FastCgi.AspNet
 
 			private void RequestEnded(object sender, EventArgs e)
 			{
-				_tcpLayer.Close();
+                if(!_server.KeepConnection)
+				    _tcpLayer.Close();
 			}
 
             public void Run()

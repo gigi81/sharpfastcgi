@@ -40,9 +40,21 @@ namespace FastCgi.Server
             }
         }
 
+        private static bool KeepConnection
+        {
+            get
+            {
+                bool ret;
+                if (Boolean.TryParse(ConfigurationManager.AppSettings["KeepConnection"], out ret))
+                    return ret;
+
+                return false;
+            }
+        }
+
         static void Main(string[] args)
         {
-            var server = FastCgiAspNetServer.CreateApplicationHost(Port, VirtualPath, PhysicalPath);
+            var server = FastCgiAspNetServer.CreateApplicationHost(Port, VirtualPath, PhysicalPath, KeepConnection);
             server.Start();
 
 			Console.WriteLine ("Listening on port {0}", Port);
