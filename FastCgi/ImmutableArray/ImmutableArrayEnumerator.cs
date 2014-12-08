@@ -31,25 +31,20 @@ namespace FastCgi.ImmutableArray
 {
     internal class ImmutableArrayEnumerator<T> : IEnumerator<T> where T : struct, IComparable, IEquatable<T>, IConvertible
     {
-        private ImmutableArray<T> _array = null;
+        private readonly List<ImmutableArrayInternal<T>> _arrays = null;
+        private int _arrayIndex = 0;
         private int _index = -1;
 
-        public ImmutableArrayEnumerator(ImmutableArray<T> array)
+        public ImmutableArrayEnumerator(List<ImmutableArrayInternal<T>> arrays)
         {
-            this.Array = array;
-        }
-
-        protected ImmutableArray<T> Array
-        {
-            get { return _array; }
-            set { _array = value; }
+            _arrays = arrays;
         }
 
         #region IEnumerator<T> Membri di
 
         public T Current
         {
-            get { return this.Array[_index]; }
+            get { return _arrays[_arrayIndex][_index]; }
         }
 
         #endregion
@@ -72,14 +67,21 @@ namespace FastCgi.ImmutableArray
         public bool MoveNext()
         {
             _index++;
-            return (_index < this.Array.Count);
+
+            if (_index > _arrays[_arrayIndex].Length)
+            {
+                _arrayIndex++;
+                _index = 0;
+            }
+            
+            return _arrayIndex < _arrays.Count && _index < _arrays[_arrayIndex].Length;
         }
 
         public void Reset()
         {
             _index = -1;
+            _arrayIndex = 0;
         }
-
         #endregion
     }
 }

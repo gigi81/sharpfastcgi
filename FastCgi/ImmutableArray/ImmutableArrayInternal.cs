@@ -68,9 +68,9 @@ namespace FastCgi.ImmutableArray
 			if ((sourceIndex + length) > data.Length)
 				throw new ArgumentOutOfRangeException("The sourceIndex and length specified overcome the source ByteArray length");
 
-			this.Offset = 0;
-			this.Data = ImmutableArrayInternal<T>.AllocInternalArray(sourceIndex, data, length);
-			this.Length = length;
+			_offset = 0;
+			_data = ImmutableArrayInternal<T>.AllocInternalArray(sourceIndex, data, length);
+			_length = length;
 		}
 
 		public ImmutableArrayInternal(ImmutableArrayInternal<T> data)
@@ -94,16 +94,16 @@ namespace FastCgi.ImmutableArray
 			if ((sourceIndex + length) > data.Length)
 				throw new ArgumentOutOfRangeException("The sourceIndex and length specified overcome the source ByteArray length");
 
-			this.Offset = data.Offset + sourceIndex;
-			this.Data = data.Data;
-			this.Length = length;
+			_offset = data.Offset + sourceIndex;
+			_data = data.Data;
+			_length = length;
 		}
 
 		public ImmutableArrayInternal(ICollection<T> array)
 		{
-			this.Offset = 0;
-			this.Data = AllocInternalArray(array);
-			this.Length = array.Count;
+			_offset = 0;
+			_data = AllocInternalArray(array);
+			_length = array.Count;
 		}
 		#endregion
 
@@ -112,24 +112,23 @@ namespace FastCgi.ImmutableArray
 		{
 			get
 			{
-				return this.Data[this.Offset + index];
+				return _data[_offset + index];
 			}
 		}
 
 		public int Length
 		{
 			get { return _length; }
-			protected set { _length = value; }
 		}
 
 		public ImmutableArrayInternal<T> SubArrayInternal(int sourceIndex)
 		{
-			return this.SubArrayInternal(sourceIndex, this.Length - sourceIndex);
+			return this.SubArrayInternal(sourceIndex, _length - sourceIndex);
 		}
 
 		public ImmutableArrayInternal<T> SubArrayInternal(int sourceIndex, int length)
 		{
-			if ((sourceIndex == 0) && (length == this.Length))
+			if ((sourceIndex == 0) && (length == _length))
 				return this;
 
 			return new ImmutableArrayInternal<T>(sourceIndex, this, length);
@@ -137,12 +136,12 @@ namespace FastCgi.ImmutableArray
 
 		public void CopyTo(Array array, int index)
 		{
-			this.CopyTo(array, index, this.Length);
+			this.CopyTo(array, index, _length);
 		}
 
 		public void CopyTo(Array array, int index, int length)
 		{
-			Array.Copy(this.Data, this.Offset, array, index, length);
+			Array.Copy(_data, _offset, array, index, length);
 		}
 		#endregion
 
@@ -178,13 +177,13 @@ namespace FastCgi.ImmutableArray
 
 		public override int GetHashCode()
 		{
-			int step = this.Length / ImmutableArrayInternal<T>.HASH_MAX_ELEMENTS;
+			int step = _length / ImmutableArrayInternal<T>.HASH_MAX_ELEMENTS;
 			if (step <= 0)
 				step = 1;
 
 			int hash = 0;
 
-			for (int i = 0; i < this.Length; i += step)
+			for (int i = 0; i < _length; i += step)
 				hash += this[i].GetHashCode();
 
 			return hash;
@@ -192,17 +191,17 @@ namespace FastCgi.ImmutableArray
 
 		public override string ToString()
 		{
-			if (this.Length <= 0)
+			if (_length <= 0)
 				return String.Empty;
 
 			StringBuilder builder = new StringBuilder();
 
-			for (int i = 0; i < (this.Length - 1); i++)
+			for (int i = 0; i < (_length - 1); i++)
 			{
 				builder.Append(this[i].ToString());
 				builder.Append(ImmutableArrayInternal<T>.SEPARATOR);
 			}
-			builder.Append(this[this.Length - 1].ToString());
+			builder.Append(this[_length - 1].ToString());
 
 			return builder.ToString();
 		}
@@ -211,10 +210,10 @@ namespace FastCgi.ImmutableArray
 		#region EqualsTo methods
 		protected bool EqualsTo(T[] array)
 		{
-			if (this.Length != array.Length)
+			if (_length != array.Length)
 				return false;
 
-			for (int i = 0; i < this.Length; i++)
+			for (int i = 0; i < _length; i++)
 				if (!this[i].Equals(array[i]))
 					return false;
 
@@ -223,7 +222,7 @@ namespace FastCgi.ImmutableArray
 
 		protected bool EqualsTo(ImmutableArrayInternal<T> array)
 		{
-			if (this.Length != array.Length)
+			if (_length != array.Length)
 				return false;
 
 			//fast compare
@@ -231,7 +230,7 @@ namespace FastCgi.ImmutableArray
 				return false;
 
 			//slow compare
-			for (int i = 0; i < this.Length; i++)
+			for (int i = 0; i < _length; i++)
 				if (!this[i].Equals(array[i]))
 					return false;
 

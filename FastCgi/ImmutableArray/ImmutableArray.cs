@@ -103,10 +103,10 @@ namespace FastCgi.ImmutableArray
 		/// Creates an immutable array concatenating the specified array of immutable arrays
 		/// </summary>
 		/// <param name="arrays">Immutable arrays to concatenate</param>
-		private ImmutableArray(ImmutableArrayInternal<T>[] arrays)
+		private ImmutableArray(IEnumerable<ImmutableArrayInternal<T>> arrays)
 		{
-			foreach (ImmutableArrayInternal<T> byteArray in arrays)
-				this.Add(byteArray);
+			foreach (ImmutableArrayInternal<T> array in arrays)
+				this.Add(array);
 		}
 		#endregion
 
@@ -140,7 +140,7 @@ namespace FastCgi.ImmutableArray
 		/// <returns>An immutable array that is a portion of this array</returns>
 		public ImmutableArray<T> SubArray(int sourceIndex)
 		{
-			return this.SubArray(sourceIndex, this.Count - sourceIndex);
+			return this.SubArray(sourceIndex, _length - sourceIndex);
 		}
 
 		/// <summary>
@@ -151,31 +151,25 @@ namespace FastCgi.ImmutableArray
 		/// <returns>An immutable array that is a portion of this array</returns>
 		public ImmutableArray<T> SubArray(int sourceIndex, int length)
 		{
-			if ((this.Count == sourceIndex) && (length == 0))
+			if ((_length == sourceIndex) && (length == 0))
 				return Empty;
 
-			List<ImmutableArrayInternal<T>> ret = new List<ImmutableArrayInternal<T>>();
-			int i = this.GetArrayIndexAt(ref sourceIndex);
+            if ((sourceIndex + length) > _length)
+                throw new ArgumentOutOfRangeException("The sourceIndex and length specified overcome the array length");
 
-			if ((sourceIndex + length) > this.Count)
-				throw new ArgumentOutOfRangeException("The sourceIndex and length specified overcome the array length");
+			var ret = new List<ImmutableArrayInternal<T>>();
+			var i = this.GetArrayIndexAt(ref sourceIndex);
 
-			ImmutableArrayInternal<T> array = _arrays[i];
-			array = new ImmutableArrayInternal<T>(sourceIndex, array, array.Length < length ? array.Length : length);
-			length -= array.Length;
-
-			ret.Add(array);
-			for (i += 1; (length > 0) && (i < _arrays.Count); i++)
+			for (; length > 0; i++)
 			{
-				array = _arrays[i];
-				if (array.Length > length) //if only partial create a subarray
-					array = array.SubArrayInternal(0, length);
+                var array = _arrays[i].SubArrayInternal(sourceIndex, _arrays[i].Length > length ? length : _arrays[i].Length);
 
 				ret.Add(array);
 				length -= array.Length;
+                sourceIndex = 0;
 			}
 
-			return new ImmutableArray<T>(ret.ToArray());
+			return new ImmutableArray<T>(ret);
 		}
 
 		/// <summary>
@@ -262,7 +256,7 @@ namespace FastCgi.ImmutableArray
 		/// <returns>A mutable array containing a copy of this array</returns>
 		public T[] ToArray()
 		{
-			T[] ret = new T[this.Count];
+			T[] ret = new T[_length];
 			this.CopyTo(ret, 0);
 			return ret;
 		}
@@ -281,7 +275,7 @@ namespace FastCgi.ImmutableArray
 				return;
 
 			_arrays.Add(array);
-			_offsets.Add(this.Count + array.Length);
+			_offsets.Add(_length + array.Length);
 			_length += array.Length;
 		}
 
@@ -297,7 +291,7 @@ namespace FastCgi.ImmutableArray
 		/// </remarks>
 		private int GetArrayIndexAt(ref int index)
 		{
-			if ((index < 0) || (index >= this.Count))
+			if ((index < 0) || (index >= _length))
 				throw new IndexOutOfRangeException(String.Format("Index {0} out of array bounds", index));
 
 			//we exclude that the data is in the first internal array
@@ -330,7 +324,7 @@ namespace FastCgi.ImmutableArray
 
 		private int GetArrayIndexAt_v1(ref int index)
 		{
-			if ((index < 0) || (index >= this.Count))
+			if ((index < 0) || (index >= _length))
 				throw new IndexOutOfRangeException(String.Format("Index {0} out of array bounds", index));
 		
 			for(int i=0; i<_arrays.Count; i++)
@@ -375,13 +369,13 @@ namespace FastCgi.ImmutableArray
 		/// <returns>The array hash code</returns>
 		public override int GetHashCode()
 		{
-			int step = this.Count / ImmutableArrayInternal<T>.HASH_MAX_ELEMENTS;
+			int step = _length / ImmutableArrayInternal<T>.HASH_MAX_ELEMENTS;
 			if (step <= 0)
 				step = 1;
 
 			int hash = 0;
 
-			for (int i = 0; i < this.Count; i += step)
+			for (int i = 0; i < _length; i += step)
 				hash += this[i].GetHashCode();
 
 			return hash;
@@ -427,10 +421,10 @@ namespace FastCgi.ImmutableArray
 		/// <returns>True if all the elements of the two array equals</returns>
 		protected bool EqualsTo(T[] array)
 		{
-			if (this.Count != array.Length)
+			if (_length != array.Length)
 				return false;
 
-			for (int i = 0; i < this.Count; i++)
+			for (int i = 0; i < _length; i++)
 				if (!this[i].Equals(array[i]))
 					return false;
 
@@ -444,7 +438,7 @@ namespace FastCgi.ImmutableArray
 		/// <returns>True if all the elements of the two array equals</returns>
 		protected bool EqualsTo(ImmutableArray<T> array)
 		{
-			if (this.Count != array.Count)
+			if (_length != array.Count)
 				return false;
 
 			//fast compare
@@ -452,7 +446,7 @@ namespace FastCgi.ImmutableArray
 				return false;
 
 			//slow compare
-			for (int i = 0; i < this.Count; i++)
+			for (int i = 0; i < _length; i++)
 				if (!this[i].Equals(array[i]))
 					return false;
 
@@ -471,25 +465,25 @@ namespace FastCgi.ImmutableArray
 		}
 		#endregion
 
-		#region IEnumerable<T> Membri di
+        #region Members of IEnumerable<T>
 
-		public IEnumerator<T> GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
 		{
-			return new ImmutableArrayEnumerator<T>(this);
+			return new ImmutableArrayEnumerator<T>(_arrays);
 		}
 
 		#endregion
 
-		#region IEnumerable Membri di
+        #region Members of IEnumerable
 
-		IEnumerator IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
 		{
-			return new ImmutableArrayEnumerator<T>(this);
+			return new ImmutableArrayEnumerator<T>(_arrays);
 		}
 
 		#endregion
 
-		#region ICollection Membri di
+		#region Members of ICollection
 		/// <summary>
 		/// Copy all the data from this immutable array to the mutable array specified at the offset specified
 		/// </summary>
@@ -497,7 +491,7 @@ namespace FastCgi.ImmutableArray
 		/// <param name="index">Offset of the destination array where to start copying data</param>
 		public void CopyTo(Array array, int index)
 		{
-			this.CopyTo(array, index, this.Count);
+			this.CopyTo(array, index, _length);
 		}
 
 		/// <summary>
