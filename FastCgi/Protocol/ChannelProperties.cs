@@ -31,8 +31,8 @@ namespace FastCgi.Protocol
 {
 	public class ChannelProperties
 	{
-		public const string MaxConns 	= "FCGI_MAX_CONNS";
-		public const string MaxReqs 	= "FCGI_MAX_REQS";
+		public const string MaxConns    = "FCGI_MAX_CONNS";
+		public const string MaxReqs     	= "FCGI_MAX_REQS";
 		public const string MpxsConns   = "FCGI_MPXS_CONNS";
 
 		/// <summary>

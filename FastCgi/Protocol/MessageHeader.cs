@@ -78,7 +78,7 @@ namespace FastCgi.Protocol
 		}
 
         public MessageHeader(ByteArray array)
-            : this(array.SubArray(0, HeaderSize).ToArray())
+            : this(array.ToArray(0, HeaderSize))
         {
         }
 

@@ -33,7 +33,7 @@ namespace FastCgi.ImmutableArray
 	/// Immutable array
 	/// </summary>
 	/// <typeparam name="T">Elements type of the array</typeparam>
-	public class ImmutableArray<T> : ICloneable, ICollection, IEnumerable<T> where T : struct, IComparable, IEquatable<T>, IConvertible
+	public class ImmutableArray<T> : IDisposable, ICloneable, ICollection, IEnumerable<T> where T : struct, IComparable, IEquatable<T>, IConvertible
 	{
 		/// <summary>
 		/// Empty array
@@ -44,7 +44,7 @@ namespace FastCgi.ImmutableArray
 		private List<int> _offsets = new List<int>();
 		private int _length = 0;
 
-		#region Constructors
+		#region Constructors and Destructor
 		/// <summary>
 		/// Creates an immutable array cloning the specified array
 		/// </summary>
@@ -108,10 +108,15 @@ namespace FastCgi.ImmutableArray
 			foreach (ImmutableArrayInternal<T> array in arrays)
 				this.Add(array);
 		}
+
+        ~ImmutableArray()
+        {
+            this.Dispose(true);
+        }
 		#endregion
 
-		#region Public methods/properties
-		/// <summary>
+        #region Public methods/properties
+        /// <summary>
 		/// Length of the array
 		/// </summary>
 		public int Count
@@ -138,7 +143,7 @@ namespace FastCgi.ImmutableArray
 		/// </summary>
 		/// <param name="sourceIndex">Index to start from</param>
 		/// <returns>An immutable array that is a portion of this array</returns>
-		public ImmutableArray<T> SubArray(int sourceIndex)
+		public ImmutableArray<T> SubArray(int sourceIndex, bool dispose = false)
 		{
 			return this.SubArray(sourceIndex, _length - sourceIndex);
 		}
@@ -149,10 +154,13 @@ namespace FastCgi.ImmutableArray
 		/// <param name="sourceIndex">Index to start from</param>
 		/// <param name="length">Length of the portion</param>
 		/// <returns>An immutable array that is a portion of this array</returns>
-		public ImmutableArray<T> SubArray(int sourceIndex, int length)
+        public ImmutableArray<T> SubArray(int sourceIndex, int length, bool dispose = false)
 		{
 			if ((_length == sourceIndex) && (length == 0))
 				return Empty;
+
+            if ((sourceIndex == 0) && (length == _length))
+                return new ImmutableArray<T>(_arrays); //we have to make a copy here, we cannot return this instance
 
             if ((sourceIndex + length) > _length)
                 throw new ArgumentOutOfRangeException("The sourceIndex and length specified overcome the array length");
@@ -162,7 +170,7 @@ namespace FastCgi.ImmutableArray
 
 			for (; length > 0; i++)
 			{
-                var array = _arrays[i].SubArrayInternal(sourceIndex, _arrays[i].Length > length ? length : _arrays[i].Length);
+                var array = _arrays[i].SubArrayInternal(sourceIndex, Math.Min(length, _arrays[i].Length - sourceIndex));
 
 				ret.Add(array);
 				length -= array.Length;
@@ -177,9 +185,13 @@ namespace FastCgi.ImmutableArray
 		/// </summary>
 		/// <param name="array">Array to concatenate with this one</param>
 		/// <returns>An immutable array</returns>
-		public ImmutableArray<T> Concat(ImmutableArray<T> array)
+        public ImmutableArray<T> Concat(ImmutableArray<T> array, bool dispose = false)
 		{
-			return new ImmutableArray<T>(new ImmutableArray<T>[] { this, array });
+			var ret = new ImmutableArray<T>(new ImmutableArray<T>[] { this, array });
+            if (dispose)
+                this.Dispose(true);
+
+            return ret;
 		}
 
 		/// <summary>
@@ -187,9 +199,13 @@ namespace FastCgi.ImmutableArray
 		/// </summary>
 		/// <param name="array">Arrays to concatenate with this one</param>
 		/// <returns>An immutable array</returns>
-		public ImmutableArray<T> Concat(T[] array)
+        public ImmutableArray<T> Concat(T[] array, bool dispose = false)
 		{
-			return new ImmutableArray<T>(new ImmutableArray<T>[] { this, new ImmutableArray<T>(array) });
+			var ret = new ImmutableArray<T>(new ImmutableArray<T>[] { this, new ImmutableArray<T>(array) });
+            if (dispose)
+                this.Dispose(true);
+
+            return ret;
 		}
 
 		/// <summary>
@@ -197,9 +213,13 @@ namespace FastCgi.ImmutableArray
 		/// </summary>
 		/// <param name="array">Arrays to concatenate with this one</param>
 		/// <returns>An immutable array</returns>
-		public ImmutableArray<T> Concat(ImmutableArray<T>[] array)
+        public ImmutableArray<T> Concat(ImmutableArray<T>[] array, bool dispose = false)
 		{
-			return new ImmutableArray<T>(new ImmutableArray<T>[] { this, new ImmutableArray<T>(array) });
+			var ret = new ImmutableArray<T>(new ImmutableArray<T>[] { this, new ImmutableArray<T>(array) });
+            if (dispose)
+                this.Dispose(true);
+
+            return ret;
 		}
 
 		/// <summary>
@@ -256,10 +276,26 @@ namespace FastCgi.ImmutableArray
 		/// <returns>A mutable array containing a copy of this array</returns>
 		public T[] ToArray()
 		{
-			T[] ret = new T[_length];
-			this.CopyTo(ret, 0);
-			return ret;
+            T[] ret = new T[_length];
+            this.CopyTo(ret, 0);
+            return ret;
 		}
+
+        /// <summary>
+        /// Creates a copy of a portion of this immutable array to a mutable array
+        /// </summary>
+        /// <param name="index">The index in this immutable array where the portion returned starts</param>
+        /// <param name="length">The length of the portion returned</param>
+        /// <returns>A mutable array containing a copy of this array</returns>
+        public T[] ToArray(int index, int length)
+        {
+            T[] ret = new T[length];
+            using(var source = this.SubArray(index))
+            {
+                this.CopyTo(ret, 0, length);
+            }
+            return ret;
+        }
 		#endregion
 
 		#region Private methods/properties
@@ -273,6 +309,8 @@ namespace FastCgi.ImmutableArray
 		{
 			if (array.Length <= 0)
 				return;
+
+            array.IncreaseReferences();
 
 			_arrays.Add(array);
 			_offsets.Add(_length + array.Length);
@@ -389,13 +427,20 @@ namespace FastCgi.ImmutableArray
 		{
 			StringBuilder builder = new StringBuilder();
 
-			foreach (ImmutableArrayInternal<T> array in _arrays)
-			{
-				if (builder.Length > 0)
-					builder.Append(ImmutableArrayInternal<T>.SEPARATOR);
+            using(var numerator = this.GetEnumerator())
+            {
+                numerator.MoveNext();
 
-				builder.Append(array.ToString());
-			}
+                while(true)
+                {
+                    builder.Append(numerator.Current.ToString());
+
+                    if (!numerator.MoveNext())
+                        break;
+
+                    builder.Append(ImmutableArrayInternal<T>.SEPARATOR);
+                }
+            }
 
 			return builder.ToString();
 		}
@@ -404,12 +449,22 @@ namespace FastCgi.ImmutableArray
 		#region EqualsTo methods
 		protected bool EqualsTo(IEnumerable<T> array)
 		{
-			IEnumerator<T> enum1 = this.GetEnumerator();
-			IEnumerator<T> enum2 = array.GetEnumerator();
+			var enum1 = this.GetEnumerator();
+			var enum2 = array.GetEnumerator();
+            var a = enum1.MoveNext();
+            var b = enum2.MoveNext();
 
-			while (enum1.MoveNext() && enum2.MoveNext())
-				if (!enum1.Current.Equals(enum2.Current))
-					return false;
+			while (a || b)
+            {
+                if (a != b)
+                    return false;
+
+                if (!enum1.Current.Equals(enum2.Current))
+                    return false;
+
+                a = enum1.MoveNext();
+                b = enum2.MoveNext();
+            }
 
 			return true;
 		}
@@ -424,11 +479,7 @@ namespace FastCgi.ImmutableArray
 			if (_length != array.Length)
 				return false;
 
-			for (int i = 0; i < _length; i++)
-				if (!this[i].Equals(array[i]))
-					return false;
-
-			return true;
+            return this.EqualsTo((IEnumerable<T>)array);
 		}
 
 		/// <summary>
@@ -446,12 +497,8 @@ namespace FastCgi.ImmutableArray
 				return false;
 
 			//slow compare
-			for (int i = 0; i < _length; i++)
-				if (!this[i].Equals(array[i]))
-					return false;
-
-			return true;
-		}
+            return this.EqualsTo((IEnumerable<T>)array);
+        }
 		#endregion
 
 		#region Members of ICloneable
@@ -526,5 +573,19 @@ namespace FastCgi.ImmutableArray
 		}
 
 		#endregion
-	}
+
+        #region Members of IDisposable
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected void Dispose(bool disposing)
+        {
+            foreach (var array in _arrays)
+                array.DecreaseReferences();
+        }
+        #endregion
+    }
 }

@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace FastCgi.ImmutableArray
 {
@@ -45,6 +46,7 @@ namespace FastCgi.ImmutableArray
 		private int _offset = 0;
 		private T[] _data = EmptyArray;
 		private int _length = 0;
+        private int _references = 0;
 
 		#region Constructors
 		public ImmutableArrayInternal(T[] data)
@@ -145,8 +147,26 @@ namespace FastCgi.ImmutableArray
 		}
 		#endregion
 
-		#region Protected and Private method/properties
-		protected int Offset
+        #region References count
+        /// <summary>
+        /// Increase the references count
+        /// </summary>
+        public int IncreaseReferences()
+        {
+            return Interlocked.Increment(ref _references);
+        }
+
+        /// <summary>
+        /// Decrease the references count
+        /// </summary>
+        public int DecreaseReferences()
+        {
+            return Interlocked.Decrement(ref _references);
+        }
+        #endregion
+
+        #region Protected and Private method/properties
+        protected int Offset
 		{
 			get { return _offset; }
 			set { _offset = value; }
@@ -158,7 +178,6 @@ namespace FastCgi.ImmutableArray
 			set { _data = value; }
 		}
 		#endregion
-
 
 		#region Object overrides
 		public override bool Equals(object obj)

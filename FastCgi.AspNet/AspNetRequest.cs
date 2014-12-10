@@ -113,6 +113,7 @@ namespace FastCgi.AspNet
 
 			builder.Append("\r\n");
 
+            //TODO: can improve performance without creating the temporary array
 			return new ByteArray(Encoding.UTF8.GetBytes(builder.ToString()));
 		}
 	}

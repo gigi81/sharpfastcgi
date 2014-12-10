@@ -68,11 +68,11 @@ namespace FastCgi.ImmutableArray
         {
             _index++;
 
-            if (_index > _arrays[_arrayIndex].Length)
-            {
-                _arrayIndex++;
-                _index = 0;
-            }
+            if (_index < _arrays[_arrayIndex].Length)
+                return true;
+
+            _arrayIndex++;
+            _index = 0;
             
             return _arrayIndex < _arrays.Count && _index < _arrays[_arrayIndex].Length;
         }

@@ -69,6 +69,7 @@ namespace FastCgi.Protocol
 			if (this.Flushing != null)
 				this.Flushing(this, new FlushEventArgs(_array));
 
+            _array.Dispose();
 			_array = ByteArray.Empty;
 		}
 

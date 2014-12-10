@@ -45,7 +45,7 @@ namespace FastCgi.Protocol
         {
             Role = (Role)Utils.ReadUint16(body, 0);
             Flags = body[2];
-            Reserved = body.SubArray(3).ToArray();
+            Reserved = body.ToArray(3, body.Count - 3);
         }
 
         /// <summary>

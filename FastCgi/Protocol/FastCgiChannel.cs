@@ -62,7 +62,7 @@ namespace FastCgi.Protocol
 		/// <param name="data">Data recived</param>
 		public virtual void Receive(ByteArray data)
 		{
-			_recvBuffer += data;
+            _recvBuffer = _recvBuffer.Concat(data, true);
 
 			while (_recvBuffer.Count >= MessageHeader.HeaderSize)
 			{
@@ -71,7 +71,7 @@ namespace FastCgi.Protocol
 					break;
 
 				ByteArray messageData = _recvBuffer.SubArray(0, header.MessageSize);
-				_recvBuffer = _recvBuffer.SubArray(header.MessageSize);
+				_recvBuffer = _recvBuffer.SubArray(header.MessageSize, true);
 
 				this.ReceiveMessage(new Message(messageData));
 			}
@@ -219,7 +219,7 @@ namespace FastCgi.Protocol
 			{
 				ushort length = (ushort)Math.Min(data.Count, Consts.MaxMessageBodySize);
 				this.SendMessage(new Message(streamType, request.Id, data.SubArray(0, length)));
-				data = data.SubArray(length);
+				data = data.SubArray(length, true);
 			}
 		}
 
