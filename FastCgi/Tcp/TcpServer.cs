@@ -46,7 +46,7 @@ namespace FastCgi.Tcp
 		/// </summary>
 		/// <param name="port">TCP/IP port to listen for incoming connections</param>
 		protected TcpServer(int port)
-			: this(IPAddress.Loopback /* Ipv4 */, port)
+			: this(IPAddress.Any /* Ipv4 */, port)
 		{
 		}
 
