@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/gigi81/sharpfastcgi.svg?branch=master)](https://travis-ci.org/gigi81/sharpfastcgi)
+[![Build Status](https://ci.appveyor.com/api/projects/status/01w5s07237opjnj3?svg=true)](https://ci.appveyor.com/project/gigi81/sharpfastcgi)
 
 sharpfastcgi
 ============
