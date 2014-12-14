@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using FastCgi.Protocol;
 using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
+using FastCgi.ImmutableArray;
 
 namespace FastCgi.Tcp
 {
@@ -34,21 +35,13 @@ namespace FastCgi.Tcp
 	{
 		public event EventHandler<UnhandledExceptionEventArgs> RunError;
 
-		private readonly TcpClient _client;
+        private static readonly BufferManager<byte> _bufferManager = new BufferManager<byte>();
 
-	    private readonly byte[] _receiveBuffer;
-	    private readonly byte[] _sendBuffer;
+        private readonly TcpClient _client;
 
 		public TcpLayer(TcpClient client)
-			: this(client, Consts.SuggestedBufferSize, Consts.SuggestedBufferSize)
-		{
-		}
-
-		public TcpLayer(TcpClient client, int recvBufferSize, int sendBufferSize)
 		{
 			_client = client;
-			_receiveBuffer = new byte[recvBufferSize];
-			_sendBuffer = new byte[sendBufferSize];
 		}
 
 		/// <summary>
@@ -62,22 +55,27 @@ namespace FastCgi.Tcp
 		/// <remarks>This is a blocking call. When exiting this call the socket will be already closed</remarks>
 		public void Run()
 		{
-			while (_client.Connected)
-			{
-				try
-				{
-					//blocking call
-					int read = _client.GetStream().Read(_receiveBuffer, 0, _receiveBuffer.Length);
-					if (read > 0)
-						this.UpperLayer.Receive(new ByteArray(_receiveBuffer, read));
-				}
-				catch (Exception ex)
-				{
-					this.OnRunError(new UnhandledExceptionEventArgs(ex, false));
-				}
-			}
+            var recvBuffer = _bufferManager.Allocate();
 
-			_client.Close();
+            try
+			{
+			    while (_client.Connected)
+			    {
+				    //blocking call
+                    int read = _client.GetStream().Read(recvBuffer, 0, recvBuffer.Length);
+				    if (read > 0)
+                        this.UpperLayer.Receive(new ByteArray(recvBuffer, read));
+			    }
+            }
+            catch (Exception ex)
+            {
+                this.OnRunError(new UnhandledExceptionEventArgs(ex, false));
+            }
+            finally
+            {
+                _bufferManager.Free(recvBuffer);
+                _client.Close();
+            }
 		}
 
 		/// <summary>
@@ -88,15 +86,24 @@ namespace FastCgi.Tcp
 		{
 			lock (_client)
 			{
-				while (data.Count > 0)
-				{
-					int length = Math.Min(data.Count, _sendBuffer.Length);
+                var sendBuffer = _bufferManager.Allocate();
 
-					data.CopyTo(_sendBuffer, 0, length);
-					_client.GetStream().Write(_sendBuffer, 0, data.Count);
-					_client.GetStream().Flush();
-					data = data.SubArray(length);
-				}
+                try
+                {
+                    while (data.Count > 0)
+                    {
+                        int length = Math.Min(data.Count, sendBuffer.Length);
+
+                        data.CopyTo(sendBuffer, 0, length);
+                        _client.GetStream().Write(sendBuffer, 0, data.Count);
+                        _client.GetStream().Flush();
+                        data = data.SubArray(length, true);
+                    }
+                }
+                finally
+                {
+                    _bufferManager.Free(sendBuffer);
+                }
 			}
 		}
 
