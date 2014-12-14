@@ -72,7 +72,14 @@ namespace FastCgi.ImmutableArray
 		/// <param name="sourceIndex">Index of the cloned array where to start cloning</param>
 		public ImmutableArray(T[] data, int length, int sourceIndex)
 		{
-			this.Add(new ImmutableArrayInternal<T>(sourceIndex, data, length));
+            while (length > 0)
+            {
+                var size = Math.Min(BufferManager<T>.DefaultSize, length);
+                this.Add(new ImmutableArrayInternal<T>(sourceIndex, data, size));
+
+                length -= size;
+                sourceIndex += size;
+            }
 		}
 
 		/// <summary>
@@ -292,7 +299,7 @@ namespace FastCgi.ImmutableArray
             T[] ret = new T[length];
             using(var source = this.SubArray(index))
             {
-                this.CopyTo(ret, 0, length);
+                source.CopyTo(ret, 0, length);
             }
             return ret;
         }
@@ -585,6 +592,8 @@ namespace FastCgi.ImmutableArray
         {
             foreach (var array in _arrays)
                 array.DecreaseReferences();
+
+            _arrays.Clear();
         }
         #endregion
     }

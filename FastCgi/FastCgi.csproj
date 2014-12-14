@@ -41,6 +41,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ImmutableArray\BufferManager.cs" />
     <Compile Include="NamedPipe\NamedPipeServer.cs" />
     <Compile Include="Protocol\ILayer.cs" />
     <Compile Include="Protocol\InputStream.cs" />

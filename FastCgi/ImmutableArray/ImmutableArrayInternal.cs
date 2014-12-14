@@ -31,6 +31,8 @@ namespace FastCgi.ImmutableArray
 {
 	internal class ImmutableArrayInternal<T> where T : struct, IComparable, IEquatable<T>, IConvertible
 	{
+        private static readonly BufferManager<T> _bufferManager = new BufferManager<T>();
+
 		private static readonly T[] EmptyArray = new T[0];
 
 		/// <summary>
@@ -47,18 +49,9 @@ namespace FastCgi.ImmutableArray
 		private T[] _data = EmptyArray;
 		private int _length = 0;
         private int _references = 0;
+        private readonly ImmutableArrayInternal<T> _source; 
 
 		#region Constructors
-		public ImmutableArrayInternal(T[] data)
-			: this(data, data.Length)
-		{
-		}
-
-		public ImmutableArrayInternal(T[] data, int length)
-			: this(0, data, length)
-		{
-		}
-
 		public ImmutableArrayInternal(int sourceIndex, T[] data, int length)
 		{
 			if (sourceIndex < 0)
@@ -99,6 +92,7 @@ namespace FastCgi.ImmutableArray
 			_offset = data.Offset + sourceIndex;
 			_data = data.Data;
 			_length = length;
+            _source = data;
 		}
 
 		public ImmutableArrayInternal(ICollection<T> array)
@@ -153,6 +147,9 @@ namespace FastCgi.ImmutableArray
         /// </summary>
         public int IncreaseReferences()
         {
+            if (_source != null)
+                return _source.IncreaseReferences();
+
             return Interlocked.Increment(ref _references);
         }
 
@@ -161,7 +158,23 @@ namespace FastCgi.ImmutableArray
         /// </summary>
         public int DecreaseReferences()
         {
-            return Interlocked.Decrement(ref _references);
+            if (_source != null)
+                return _source.DecreaseReferences();
+
+            return this.DecreaseReferenceInternal();
+        }
+
+        private int DecreaseReferenceInternal()
+        {
+            var ret = Interlocked.Decrement(ref _references);
+
+            if (ret == 0 && !object.ReferenceEquals(_data, EmptyArray))
+            {
+                _bufferManager.Free(_data);
+                _data = null;
+            }
+
+            return ret;
         }
         #endregion
 
@@ -265,7 +278,7 @@ namespace FastCgi.ImmutableArray
 		/// <returns>Allocated array</returns>
 		private static T[] AllocInternalArray(int length)
 		{
-			return new T[length];
+            return _bufferManager.Allocate();
 		}
 
 		/// <summary>
@@ -293,7 +306,7 @@ namespace FastCgi.ImmutableArray
 				return EmptyArray;
 
 			T[] ret = ImmutableArrayInternal<T>.AllocInternalArray(length);
-			Array.Copy(data, sourceIndex, ret, sourceIndex, length);
+			Array.Copy(data, sourceIndex, ret, 0, length);
 			return ret;
 		}
 		#endregion
