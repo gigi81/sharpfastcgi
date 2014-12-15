@@ -26,14 +26,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
 
 namespace FastCgi.Protocol
 {
 	/// <summary>
 	/// Defines the possible roles a FastCGI application may play
 	/// </summary>
-	public enum Role : ushort
+	public enum FastCgiRoles : ushort
 	{
 		/// <summary>
 		/// A Responder FastCGI application has the same purpose as a CGI/1.1 program:
@@ -174,38 +173,5 @@ namespace FastCgi.Protocol
 		/// Suggested buffer size for lower layers
 		/// </summary>
 		public const int SuggestedBufferSize = ChunkSize * 2 + MaxMessageBodySize;
-
-		/*
-		* Return codes for Process* functions
-		*/
-		public static int def_FCGIStreamRecord    = 0;
-		public static int def_FCGISkip        	  = 1;
-		public static int def_FCGIBeginRecord 	  = 2;
-		public static int def_FCGIMgmtRecord 	  = 3;
-	}
-
-	public static class Utils
-	{
-		/// <summary>
-		/// Reads a <see cref="ushort"/> from the <see cref="ByteArray"/> specified
-		/// </summary>
-		/// <param name="data"></param>
-		/// <param name="offset"></param>
-		/// <returns></returns>
-		public static ushort ReadUint16(ByteArray data, int offset)
-		{
-			return (ushort)((data[offset] << 8) + data[offset + 1]);
-		}
-
-		/// <summary>
-		/// Reads a <see cref="short"/> from the <see cref="ByteArray"/> specified
-		/// </summary>
-		/// <param name="data"></param>
-		/// <param name="offset"></param>
-		/// <returns></returns>
-		public static ushort ReadUint16(byte[] data, int offset)
-		{
-			return (ushort)((data[offset] << 8) + data[offset + 1]);
-		}
 	}
 }

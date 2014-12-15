@@ -9,6 +9,7 @@ using System.Security.Permissions;
 using System.Text;
 using System.Threading;
 using FastCgi.Tcp;
+using FastCgi.Protocol;
 
 namespace FastCgi.Test
 {
@@ -16,9 +17,9 @@ namespace FastCgi.Test
 	{
         private readonly SimpleTcpServer _server;
 
-        public SimpleServer(bool keepalive = false)
+        public SimpleServer()
         {
-            _server = new SimpleTcpServer(keepalive);
+            _server = new SimpleTcpServer();
         }
 
 		public void Start()
@@ -35,22 +36,20 @@ namespace FastCgi.Test
 	internal class SimpleTcpServer : TcpServer
 	{
 		public const int DefaultPort = 9000;
-        private readonly bool _keepalive = false;
 
-		public SimpleTcpServer(bool keepalive = false)
-			: this(DefaultPort, false)
+		public SimpleTcpServer()
+			: this(DefaultPort)
 		{
 		}
 
-		public SimpleTcpServer(int port, bool keepalive)
+		public SimpleTcpServer(int port)
 			: base(port)
 		{
-            _keepalive = keepalive;
 		}
 
 		protected override IChannel CreateChannel(TcpLayer tcpLayer)
 		{
-			return new SimpleChannelStack(tcpLayer, _keepalive, this.OnRequestEnded);
+			return new SimpleChannelStack(tcpLayer, this.OnRequestEnded);
 		}
 
         private void OnRequestEnded()
@@ -61,11 +60,9 @@ namespace FastCgi.Test
 		{
 			private readonly TcpLayer _tcpLayer;
             private readonly Action _endedCallback;
-            private readonly bool _keepalive = false;
 
-			public SimpleChannelStack(TcpLayer tcpLayer, bool keepalive, Action endedCallback = null)
+			public SimpleChannelStack(TcpLayer tcpLayer, Action endedCallback = null)
 			{
-                _keepalive = keepalive;
                 _endedCallback = endedCallback;
 				_tcpLayer = tcpLayer;
 			    _tcpLayer.UpperLayer = this.CreateUpperLayer(tcpLayer);
@@ -81,8 +78,8 @@ namespace FastCgi.Test
 
 			private void RequestEnded(object sender, EventArgs e)
 			{
-                if(!_keepalive)
-				    _tcpLayer.Close();
+                if (!((Request)sender).RequestBody.KeepConnection)
+                    _tcpLayer.Close();
 
                 if (_endedCallback != null)
                     _endedCallback.Invoke();

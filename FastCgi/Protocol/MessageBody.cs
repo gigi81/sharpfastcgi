@@ -30,11 +30,11 @@ namespace FastCgi.Protocol
 {
 	public struct BeginRequestMessageBody
 	{
-		public Role Role;
+		public FastCgiRoles Role;
 		public byte Flags;
 		public byte[] Reserved;
 
-        public BeginRequestMessageBody(Role role)
+        public BeginRequestMessageBody(FastCgiRoles role)
         {
             Role = role;
             Flags = 0x00;
@@ -43,7 +43,7 @@ namespace FastCgi.Protocol
 
         public BeginRequestMessageBody(ByteArray body)
         {
-            Role = (Role)Utils.ReadUint16(body, 0);
+            Role = (FastCgiRoles)Utils.ReadUint16(body, 0);
             Flags = body[2];
             Reserved = body.ToArray(3, body.Count - 3);
         }
@@ -53,7 +53,7 @@ namespace FastCgi.Protocol
         /// If true, the application does not close the connection after responding to this request;
         /// the Web server retains responsibility for the connection.
         /// </summary>
-        bool KeepConnection { get { return (this.Flags & 0x01) != 0; } }
+        public bool KeepConnection { get { return (this.Flags & 0x01) != 0; } }
 	}
 
 	public struct EndRequestMessageBody

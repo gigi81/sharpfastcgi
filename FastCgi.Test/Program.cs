@@ -13,9 +13,7 @@ namespace FastCgi.Test
 	{
 		static void Main(string[] args)
 		{
-            var keepalive = args.Length > 0 && args[0].Equals("-k");
-
-            SimpleServer server = new SimpleServer(keepalive);
+            SimpleServer server = new SimpleServer();
 			server.Start();
 
 			Console.WriteLine("Press any key to stop the fastcgi server");

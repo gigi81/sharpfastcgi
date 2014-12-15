@@ -19,27 +19,33 @@ namespace FastCgi.Test
         {
             try
             {
-                StringBuilder builder = new StringBuilder();
-                
-                builder.Append("Content-Type: text/html; charset=UTF-8\r\n\r\n");
+                StringBuilder body = new StringBuilder();
 
-                builder.Append("<html><body><table>");
+                body.Append("<html><body><table>");
                 foreach (NameValuePair param in this.Parameters)
                 {
-                    builder.Append("<tr>");
-                    builder.Append("<td>");
-                    builder.Append(param.Name);
-                    builder.Append("</td>");
-                    builder.Append("<td>");
-                    builder.Append(param.Value);
-                    builder.Append("</td>");
-                    builder.Append("</tr>");
+                    body.Append("<tr>");
+                    body.Append("<td>");
+                    body.Append(param.Name);
+                    body.Append("</td>");
+                    body.Append("<td>");
+                    body.Append(param.Value);
+                    body.Append("</td>");
+                    body.Append("</tr>");
                 }
 
-                builder.Append("</table></body></html>");
+                body.Append("</table></body></html>");
 
-                byte[] data = Encoding.UTF8.GetBytes(builder.ToString());
+                StringBuilder header = new StringBuilder();
+                header.AppendFormat("Content-Length: {0}\r\n", body.Length);
+                header.Append("Content-Type: text/html; charset=UTF-8\r\n");
+                header.Append("\r\n");
+
+                byte[] data = Encoding.UTF8.GetBytes(header.ToString());
                 this.OutputStream.Write(data, 0, data.Length);
+
+                byte[] data2 = Encoding.UTF8.GetBytes(body.ToString());
+                this.OutputStream.Write(data2, 0, data2.Length);
             }
             catch (Exception ex)
             {

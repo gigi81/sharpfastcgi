@@ -76,6 +76,8 @@ namespace FastCgi.Tcp
                 _bufferManager.Free(recvBuffer);
                 _client.Close();
             }
+
+            Console.WriteLine("Tcp layer loop completed");
 		}
 
 		/// <summary>
@@ -113,6 +115,8 @@ namespace FastCgi.Tcp
             {
                 _client.Client.Disconnect(true);
                 _client.Close();
+
+                Console.WriteLine("Tcp layer closed");
             }
 		}
 

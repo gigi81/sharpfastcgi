@@ -175,7 +175,7 @@ namespace FastCgi.Protocol
 			this.EndRequest((Request)sender);
 
 			if (this.RequestEnded != null)
-				this.RequestEnded(this, EventArgs.Empty);
+				this.RequestEnded(sender, EventArgs.Empty);
 		}
 
 		private void OnRequestOutputFlushing(object sender, FlushEventArgs e)
