@@ -27,7 +27,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FastCgi.ImmutableArray
+namespace Grillisoft.ImmutableArray
 {
 	/// <summary>
 	/// Immutable array
@@ -72,14 +72,7 @@ namespace FastCgi.ImmutableArray
 		/// <param name="sourceIndex">Index of the cloned array where to start cloning</param>
 		public ImmutableArray(T[] data, int length, int sourceIndex)
 		{
-            while (length > 0)
-            {
-                var size = Math.Min(BufferManager<T>.DefaultSize, length);
-                this.Add(new ImmutableArrayInternal<T>(sourceIndex, data, size));
-
-                length -= size;
-                sourceIndex += size;
-            }
+            this.Add(ImmutableArrayInternal<T>.Create(sourceIndex, data, length));
 		}
 
 		/// <summary>
@@ -97,13 +90,8 @@ namespace FastCgi.ImmutableArray
 		/// <param name="arrays">Arrays to be cloned</param>
 		public ImmutableArray(ImmutableArray<T>[] arrays)
 		{
-			foreach (ImmutableArray<T> byteArray in arrays)
-				this.Add(byteArray);
-		}
-
-		public ImmutableArray(ICollection<T> array)
-		{
-			this.Add(new ImmutableArrayInternal<T>(array));
+			foreach (var array in arrays)
+				this.Add(array);
 		}
 
 		/// <summary>
@@ -112,8 +100,7 @@ namespace FastCgi.ImmutableArray
 		/// <param name="arrays">Immutable arrays to concatenate</param>
 		private ImmutableArray(IEnumerable<ImmutableArrayInternal<T>> arrays)
 		{
-			foreach (ImmutableArrayInternal<T> array in arrays)
-				this.Add(array);
+            this.Add(arrays);
 		}
 
         ~ImmutableArray()
@@ -308,9 +295,14 @@ namespace FastCgi.ImmutableArray
 		#region Private methods/properties
 		private void Add(ImmutableArray<T> array)
 		{
-			foreach (ImmutableArrayInternal<T> item in array._arrays)
-				this.Add(item);
+            this.Add(array._arrays);
 		}
+
+        private void Add(IEnumerable<ImmutableArrayInternal<T>> arrays)
+        {
+            foreach (var item in arrays)
+                this.Add(item);
+        }
 
 		private void Add(ImmutableArrayInternal<T> array)
 		{

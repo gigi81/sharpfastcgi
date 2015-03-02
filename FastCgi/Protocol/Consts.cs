@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FastCgi.Protocol
+namespace Grillisoft.FastCgi.Protocol
 {
 	/// <summary>
 	/// Defines the possible roles a FastCGI application may play

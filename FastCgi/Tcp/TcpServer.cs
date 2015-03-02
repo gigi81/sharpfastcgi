@@ -28,8 +28,10 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+using Grillisoft.FastCgi.Protocol;
 
-namespace FastCgi.Tcp
+namespace Grillisoft.FastCgi.Tcp
 {
 	/// <summary>
 	/// TcpServer to listen for incoming fastcgi connections
@@ -40,6 +42,7 @@ namespace FastCgi.Tcp
 		public event EventHandler<UnhandledExceptionEventArgs> ChannelError;
 
 		private readonly TcpListener _listener;
+        private int _socketCount = 0;
 
 		/// <summary>
 		/// Creates a new TcpServer listening on 127.0.0.1 on the port specified
@@ -104,16 +107,30 @@ namespace FastCgi.Tcp
 				_listener.BeginAcceptTcpClient(this.AcceptConnection, null);
 
 			//this is a blocking call
-			if (client != null)
-				this.RunChannel(client);
+            try
+            {
+                Console.WriteLine("Opened tcp socket. Total: {0}", Interlocked.Increment(ref _socketCount));
+                if (client != null)
+                    this.RunChannel(client);
+            }
+            finally
+            {
+                Console.WriteLine("Closed tcp socket. Total: {0}", Interlocked.Decrement(ref _socketCount));
+            }
 		}
 
 		private void RunChannel(TcpClient client)
 		{
 			try
 			{
-				var channel = this.CreateChannel(new TcpLayer(client));
-				channel.Run();
+                var layer = new TcpLayer(client);
+				var channel = this.CreateChannel(layer);
+                channel.RequestEnded += (sender, e) => {
+                    if (!((Request)sender).RequestBody.KeepConnection)
+                        layer.Close();
+                };
+                layer.UpperLayer = channel;
+                layer.Run();
 			}
 			catch (Exception ex)
 			{
@@ -125,7 +142,7 @@ namespace FastCgi.Tcp
 		/// Creates a new FastCgiChannel
 		/// </summary>
 		/// <param name="tcpLayer">Lower <see cref="TcpLayer"/> used to communicate with the web server</param>
-		protected abstract IChannel CreateChannel(TcpLayer tcpLayer);
+		protected abstract FastCgiChannel CreateChannel(ILowerLayer layer);
 
 		protected virtual void OnAcceptError(UnhandledExceptionEventArgs args)
 		{
@@ -139,9 +156,4 @@ namespace FastCgi.Tcp
 				this.ChannelError(this, args);
 		}
 	}
-
-    public interface IChannel
-    {
-        void Run();
-    }
 }

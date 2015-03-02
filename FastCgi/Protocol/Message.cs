@@ -23,9 +23,9 @@
 #endregion
 
 using System;
-using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
+using ByteArray = Grillisoft.ImmutableArray.ImmutableArray<byte>;
 
-namespace FastCgi.Protocol
+namespace Grillisoft.FastCgi.Protocol
 {
 	public class Message
 	{

@@ -8,11 +8,11 @@
     <ProjectGuid>{315E3781-3E29-459B-A0D6-EF880F60D6E0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FastCgi.AspNet</RootNamespace>
-    <AssemblyName>FastCgi.AspNet</AssemblyName>
+    <RootNamespace>Grillisoft.FastCgi.AspNet</RootNamespace>
+    <AssemblyName>Grillisoft.FastCgi.AspNet</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>FastCgi.AspNet.key</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -49,6 +49,10 @@
     <ProjectReference Include="..\FastCgi\FastCgi.csproj">
       <Project>{A3C516B6-046B-44C2-9387-2D01646589C9}</Project>
       <Name>FastCgi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ImmutableArray\ImmutableArray.csproj">
+      <Project>{afe9fdde-332c-41a5-8da5-6c974f9e6956}</Project>
+      <Name>ImmutableArray</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

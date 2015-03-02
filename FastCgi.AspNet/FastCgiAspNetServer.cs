@@ -4,10 +4,10 @@ using System.IO;
 using System.Runtime.Remoting;
 using System.Threading;
 using System.Web.Hosting;
-using FastCgi.Protocol;
-using FastCgi.Tcp;
+using Grillisoft.FastCgi.Protocol;
+using Grillisoft.FastCgi.Tcp;
 
-namespace FastCgi.AspNet
+namespace Grillisoft.FastCgi.AspNet
 {
     public class FastCgiAspNetServer : MarshalByRefObject
     {
@@ -67,41 +67,11 @@ namespace FastCgi.AspNet
 
         public string PhysicalPath { get; private set; }
 
-		protected override IChannel CreateChannel(TcpLayer tcpLayer)
+		protected override FastCgiChannel CreateChannel(ILowerLayer layer)
 		{
-			return new CustomAspNetChannelStack(tcpLayer, this);
-		}
-
-        private class CustomAspNetChannelStack : IChannel
-        {
-            private readonly ServerInternal _server;
-			private readonly TcpLayer _tcpLayer;
-
-            public CustomAspNetChannelStack(TcpLayer tcpLayer, ServerInternal server)
-			{
-			    _server = server;
-				_tcpLayer = tcpLayer;
-				_tcpLayer.UpperLayer = this.CreateUpperLayer(tcpLayer);
-			}
-
-            private CustomAspNetChannel CreateUpperLayer(TcpLayer tcpLayer)
-            {
-                var channel = new CustomAspNetChannel(_server);
-                channel.LowerLayer = tcpLayer;
-                channel.RequestEnded += new EventHandler(RequestEnded);
-                return channel;
-            }
-
-			private void RequestEnded(object sender, EventArgs e)
-			{
-                if (!((Request)sender).RequestBody.KeepConnection)
-				    _tcpLayer.Close();
-			}
-
-            public void Run()
-            {
-                _tcpLayer.Run();
-            }
+            var channel = new CustomAspNetChannel(this);
+            channel.LowerLayer = layer;
+            return channel;
 		}
 
         internal class CustomAspNetChannel : SimpleFastCgiChannel<CustomAspNetRequest>

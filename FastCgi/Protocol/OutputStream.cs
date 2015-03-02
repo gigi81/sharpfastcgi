@@ -25,9 +25,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
+using ByteArray = Grillisoft.ImmutableArray.ImmutableArray<byte>;
 
-namespace FastCgi.Protocol
+namespace Grillisoft.FastCgi.Protocol
 {
 	/// <summary>
 	/// Output stream to write data to
@@ -104,7 +104,7 @@ namespace FastCgi.Protocol
 			else
 			{
 				this.WriteCache();
-				_array += new ByteArray(buffer, count, offset);
+				_array.Concat(new ByteArray(buffer, count, offset), true);
 			}
 		}
 
@@ -113,7 +113,7 @@ namespace FastCgi.Protocol
 			if (_chache.Length <= 0)
 				return;
 
-			_array += new ByteArray(_chache.ToArray());
+			_array.Concat(new ByteArray(_chache.ToArray()), true);
 			_chache.SetLength(0);
 		}
 	}

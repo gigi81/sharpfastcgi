@@ -24,9 +24,9 @@
 
 using System;
 using System.Text;
-using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
+using ByteArray = Grillisoft.ImmutableArray.ImmutableArray<byte>;
 
-namespace FastCgi.Protocol
+namespace Grillisoft.FastCgi.Protocol
 {
 	public struct BeginRequestMessageBody
 	{

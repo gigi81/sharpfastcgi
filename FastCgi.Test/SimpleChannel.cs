@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FastCgi.Test
+namespace Grillisoft.FastCgi.Test
 {
-    public class SimpleChannel : FastCgi.Protocol.FastCgiChannel
+    public class SimpleChannel : Grillisoft.FastCgi.Protocol.FastCgiChannel
     {
         private Dictionary<ushort, SimpleRequest> _request = new Dictionary<ushort, SimpleRequest>();
 
@@ -13,8 +13,8 @@ namespace FastCgi.Test
         {
             this.Properties = new Protocol.ChannelProperties()
             {
-                MaximumConnections = 1,
-                MaximumRequests = 1,
+                MaximumConnections = 128,
+                MaximumRequests = 128,
                 SupportMultiplexedConnection = false
             };
         }

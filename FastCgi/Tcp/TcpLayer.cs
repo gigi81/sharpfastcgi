@@ -25,19 +25,19 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using FastCgi.Protocol;
-using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
-using FastCgi.ImmutableArray;
+using Grillisoft.FastCgi.Protocol;
+using ByteArray = Grillisoft.ImmutableArray.ImmutableArray<byte>;
+using Grillisoft.ImmutableArray;
 
-namespace FastCgi.Tcp
+namespace Grillisoft.FastCgi.Tcp
 {
 	public class TcpLayer : ILowerLayer, IDisposable
 	{
 		public event EventHandler<UnhandledExceptionEventArgs> RunError;
 
-        private static readonly BufferManager<byte> _bufferManager = new BufferManager<byte>();
-
         private readonly TcpClient _client;
+        private readonly byte[] _recvBuffer = new byte[4096];
+        private readonly byte[] _sendBuffer = new byte[4096];
 
 		public TcpLayer(TcpClient client)
 		{
@@ -55,16 +55,17 @@ namespace FastCgi.Tcp
 		/// <remarks>This is a blocking call. When exiting this call the socket will be already closed</remarks>
 		public void Run()
 		{
-            var recvBuffer = _bufferManager.Allocate();
-
             try
 			{
 			    while (_client.Connected)
 			    {
 				    //blocking call
-                    int read = _client.GetStream().Read(recvBuffer, 0, recvBuffer.Length);
+                    int read = _client.GetStream().Read(_recvBuffer, 0, _recvBuffer.Length);
 				    if (read > 0)
-                        this.UpperLayer.Receive(new ByteArray(recvBuffer, read));
+                    {
+                        //Console.WriteLine("received {0} bytes", read);
+                        this.UpperLayer.Receive(new ByteArray(_recvBuffer, read));
+                    }
 			    }
             }
             catch (Exception ex)
@@ -73,7 +74,6 @@ namespace FastCgi.Tcp
             }
             finally
             {
-                _bufferManager.Free(recvBuffer);
                 _client.Close();
             }
 
@@ -86,25 +86,17 @@ namespace FastCgi.Tcp
 		/// <param name="data">Data to send</param>
 		public void Send(ByteArray data)
 		{
-			lock (_client)
+			lock (_sendBuffer)
 			{
-                var sendBuffer = _bufferManager.Allocate();
-
-                try
+                while (data.Count > 0)
                 {
-                    while (data.Count > 0)
-                    {
-                        int length = Math.Min(data.Count, sendBuffer.Length);
+                    int length = Math.Min(data.Count, _sendBuffer.Length);
 
-                        data.CopyTo(sendBuffer, 0, length);
-                        _client.GetStream().Write(sendBuffer, 0, data.Count);
-                        _client.GetStream().Flush();
-                        data = data.SubArray(length, true);
-                    }
-                }
-                finally
-                {
-                    _bufferManager.Free(sendBuffer);
+                    data.CopyTo(_sendBuffer, 0, length);
+                    _client.GetStream().Write(_sendBuffer, 0, length);
+                    _client.GetStream().Flush();
+                    //Console.WriteLine("sent {0} bytes", length);
+                    data = data.SubArray(length, true);
                 }
 			}
 		}
@@ -115,8 +107,6 @@ namespace FastCgi.Tcp
             {
                 _client.Client.Disconnect(true);
                 _client.Close();
-
-                Console.WriteLine("Tcp layer closed");
             }
 		}
 

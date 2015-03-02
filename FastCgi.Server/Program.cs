@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.Hosting;
-using FastCgi.AspNet;
+using Grillisoft.FastCgi.AspNet;
 using System.Configuration;
 
-namespace FastCgi.Server
+namespace Grillisoft.FastCgi.Server
 {
     class Program
     {

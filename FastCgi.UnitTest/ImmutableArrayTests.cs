@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
+using ByteArray = Grillisoft.ImmutableArray.ImmutableArray<byte>;
 
-namespace FastCgi.UnitTest
+namespace Grillisoft.FastCgi.UnitTest
 {
     [TestClass]
     public class ImmutableArrayTests

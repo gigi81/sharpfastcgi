@@ -27,7 +27,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Win32.SafeHandles;
 
-namespace FastCgi.AspNet
+namespace Grillisoft.FastCgi.AspNet
 {
 	public class FastCgiWorkerRequest : System.Web.Hosting.SimpleWorkerRequest
 	{

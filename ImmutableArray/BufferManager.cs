@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FastCgi.ImmutableArray
+namespace Grillisoft.ImmutableArray
 {
-    public class BufferManager<T>
+    internal class BufferManager<T> : IBufferManager<T> where T : struct, IComparable, IEquatable<T>, IConvertible
     {
         public const int DefaultSize = 4096;
 

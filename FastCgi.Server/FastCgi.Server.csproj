@@ -8,8 +8,8 @@
     <ProjectGuid>{2EA7BA06-B06C-4296-A8B7-E5DB3E9268B5}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FastCgi.Server</RootNamespace>
-    <AssemblyName>FastCgi.Server</AssemblyName>
+    <RootNamespace>Grillisoft.FastCgi.Server</RootNamespace>
+    <AssemblyName>Grillisoft.FastCgi.Server</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -55,6 +55,10 @@
     <ProjectReference Include="..\FastCgi\FastCgi.csproj">
       <Project>{A3C516B6-046B-44C2-9387-2D01646589C9}</Project>
       <Name>FastCgi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ImmutableArray\ImmutableArray.csproj">
+      <Project>{afe9fdde-332c-41a5-8da5-6c974f9e6956}</Project>
+      <Name>ImmutableArray</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

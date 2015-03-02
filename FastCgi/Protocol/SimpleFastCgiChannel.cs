@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FastCgi.Protocol
+namespace Grillisoft.FastCgi.Protocol
 {
 	/// <summary>
 	/// A <see cref="FastCgiChannel"/> that can handle only one request at a time

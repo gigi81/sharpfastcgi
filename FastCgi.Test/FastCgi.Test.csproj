@@ -8,8 +8,8 @@
     <ProjectGuid>{CDBC8D4A-CB1C-4DF9-B1A8-A3A5D07B2D71}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FastCgi.Test</RootNamespace>
-    <AssemblyName>FastCgi.Test</AssemblyName>
+    <RootNamespace>Grillisoft.FastCgi.Test</RootNamespace>
+    <AssemblyName>Grillisoft.FastCgi.Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -60,8 +60,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleChannel.cs" />
+    <Compile Include="SimpleNamedPipeServer.cs" />
     <Compile Include="SimpleRequest.cs" />
-    <Compile Include="SimpleServer.cs" />
+    <Compile Include="SimpleTcpServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

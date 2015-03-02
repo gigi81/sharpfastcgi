@@ -25,11 +25,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using FastCgi.ImmutableArray;
+using Grillisoft.ImmutableArray;
 using System.Diagnostics;
-using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
+using ByteArray = Grillisoft.ImmutableArray.ImmutableArray<byte>;
 
-namespace FastCgi.Protocol
+namespace Grillisoft.FastCgi.Protocol
 {
 	/// <summary>
 	/// FastiCGI channel
@@ -66,11 +66,11 @@ namespace FastCgi.Protocol
 
 			while (_recvBuffer.Count >= MessageHeader.HeaderSize)
 			{
-				MessageHeader header = new MessageHeader(_recvBuffer);
+				var header = new MessageHeader(_recvBuffer);
 				if (_recvBuffer.Count < header.MessageSize)
 					break;
 
-				ByteArray messageData = _recvBuffer.SubArray(0, header.MessageSize);
+				var messageData = _recvBuffer.SubArray(0, header.MessageSize);
 				_recvBuffer = _recvBuffer.SubArray(header.MessageSize, true);
 
 				this.ReceiveMessage(new Message(messageData));
@@ -144,7 +144,7 @@ namespace FastCgi.Protocol
 					foreach(NameValuePair item in collection)
 						item.Encode(writer);
 
-					ByteArray body = new ByteArray(stream.ToArray());
+					var body = new ByteArray(stream.ToArray());
 					this.SendMessage(new Message(MessageType.GetValuesResult, 0, body));
 				}
 			}
@@ -162,13 +162,17 @@ namespace FastCgi.Protocol
 			if (message.Body.Count < Consts.ChunkSize)
 				return;
 
-			Request request = this.CreateRequest(message.Header.RequestId, new BeginRequestMessageBody(message.Body));
-			request.Ended += new EventHandler(OnRequestEnded);
-			request.OutputFlushing += new EventHandler<FlushEventArgs>(OnRequestOutputFlushing);
-			request.ErrorFlushing += new EventHandler<FlushEventArgs>(OnRequestErrorFlushing);
-
-			this.AddRequest(request);
+			this.AddRequest(CreateRequestInternal(message));
 		}
+
+        private Request CreateRequestInternal(Message message)
+        {
+            var request = this.CreateRequest(message.Header.RequestId, new BeginRequestMessageBody(message.Body));
+            request.Ended += new EventHandler(OnRequestEnded);
+            request.OutputFlushing += new EventHandler<FlushEventArgs>(OnRequestOutputFlushing);
+            request.ErrorFlushing += new EventHandler<FlushEventArgs>(OnRequestErrorFlushing);
+            return request;
+        }
 
 		private void OnRequestEnded(object sender, EventArgs e)
 		{
@@ -194,14 +198,18 @@ namespace FastCgi.Protocol
 		/// <param name="request"><typeparamref name="Request"/> to end</param>
 		protected virtual void EndRequest(Request request)
 		{
-			EndRequestMessageBody body = new EndRequestMessageBody(request.ExitCode, ProtocolStatus.RequestComplete);
-
-			this.SendMessage(new Message(MessageType.StandardError, request.Id, ByteArray.Empty));
-			this.SendMessage(new Message(MessageType.StandardOutput, request.Id, ByteArray.Empty));
-			this.SendMessage(new Message(MessageType.EndRequest, request.Id, body.ToArray()));
-
+            this.SendMessages(this.CreateEndRequestMessages(request));
 			this.RemoveRequest(request);
 		}
+
+        private IEnumerable<Message> CreateEndRequestMessages(Request request)
+        {
+            yield return new Message(MessageType.StandardError, request.Id, ByteArray.Empty);
+			yield return new Message(MessageType.StandardOutput, request.Id, ByteArray.Empty);
+
+            var body = new EndRequestMessageBody(request.ExitCode, ProtocolStatus.RequestComplete);
+			yield return new Message(MessageType.EndRequest, request.Id, body.ToArray());
+        }
 
 		/// <summary>
 		/// Send a request output data to the output or error stream
@@ -223,16 +231,23 @@ namespace FastCgi.Protocol
 			}
 		}
 
+        /// <summary>
+        /// Sends messages to the FastCGI client
+        /// </summary>
+        /// <param name="message"><typeparamref name="Message"/> to send</param>
+        protected virtual void SendMessages(IEnumerable<Message> messages)
+        {
+            foreach (var message in messages)
+                this.SendMessage(message);
+        }
+
 		/// <summary>
 		/// Sends a message to the FastCGI client
 		/// </summary>
 		/// <param name="message"><typeparamref name="Message"/> to send</param>
-		public virtual void SendMessage(Message message)
+		protected virtual void SendMessage(Message message)
 		{
-			var array = message.ToByteArray();
-			Debug.WriteLine(array);
-
-			this.LowerLayer.Send(array);
+			this.LowerLayer.Send(message.ToByteArray());
 		}
 
 		#region Abstract methods

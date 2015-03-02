@@ -27,7 +27,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FastCgi.ImmutableArray
+namespace Grillisoft.ImmutableArray
 {
     internal class ImmutableArrayEnumerator<T> : IEnumerator<T> where T : struct, IComparable, IEquatable<T>, IConvertible
     {

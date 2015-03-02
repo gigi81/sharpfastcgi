@@ -27,12 +27,12 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using System.Threading;
-using FastCgi.Protocol;
-using ByteArray = FastCgi.ImmutableArray.ImmutableArray<byte>;
+using Grillisoft.FastCgi.Protocol;
+using ByteArray = Grillisoft.ImmutableArray.ImmutableArray<byte>;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 
-namespace FastCgi.AspNet
+namespace Grillisoft.FastCgi.AspNet
 {
 	public class AspNetRequest : Request
 	{
@@ -95,7 +95,7 @@ namespace FastCgi.AspNet
 
 		protected virtual ByteArray SerializeHeaders()
 		{
-			StringBuilder builder = new StringBuilder();
+			var builder = new StringBuilder();
 
 			if (!String.IsNullOrEmpty(this.Status))
 			{

@@ -6,8 +6,8 @@
     <ProjectGuid>{67219CCA-AEF5-499A-9580-36CFEFA3EEAF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FastCgi.UnitTest</RootNamespace>
-    <AssemblyName>FastCgi.UnitTest</AssemblyName>
+    <RootNamespace>Grillisoft.FastCgi.UnitTest</RootNamespace>
+    <AssemblyName>Grillisoft.FastCgi.UnitTest</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -58,6 +58,10 @@
     <ProjectReference Include="..\FastCgi\FastCgi.csproj">
       <Project>{a3c516b6-046b-44c2-9387-2d01646589c9}</Project>
       <Name>FastCgi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ImmutableArray\ImmutableArray.csproj">
+      <Project>{afe9fdde-332c-41a5-8da5-6c974f9e6956}</Project>
+      <Name>ImmutableArray</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastCgi.Server", "FastCgi.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastCgi.UnitTest", "FastCgi.UnitTest\FastCgi.UnitTest.csproj", "{67219CCA-AEF5-499A-9580-36CFEFA3EEAF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableArray", "ImmutableArray\ImmutableArray.csproj", "{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,16 @@ Global
 		{67219CCA-AEF5-499A-9580-36CFEFA3EEAF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{67219CCA-AEF5-499A-9580-36CFEFA3EEAF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{67219CCA-AEF5-499A-9580-36CFEFA3EEAF}.Release|x86.ActiveCfg = Release|Any CPU
+		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

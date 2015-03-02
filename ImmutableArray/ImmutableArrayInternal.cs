@@ -23,15 +23,16 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace FastCgi.ImmutableArray
+namespace Grillisoft.ImmutableArray
 {
 	internal class ImmutableArrayInternal<T> where T : struct, IComparable, IEquatable<T>, IConvertible
 	{
-        private static readonly BufferManager<T> _bufferManager = new BufferManager<T>();
+        private static readonly IBufferManager<T> _bufferManager = new BufferManager<T>();
 
 		private static readonly T[] EmptyArray = new T[0];
 
@@ -52,9 +53,9 @@ namespace FastCgi.ImmutableArray
         private readonly ImmutableArrayInternal<T> _source; 
 
 		#region Constructors
-		public ImmutableArrayInternal(int sourceIndex, T[] data, int length)
-		{
-			if (sourceIndex < 0)
+        public static IEnumerable<ImmutableArrayInternal<T>> Create(int sourceIndex, T[] data, int length)
+        {
+ 			if (sourceIndex < 0)
 				throw new IndexOutOfRangeException("Index cannot be less than zero");
 
 			if (data == null)
@@ -63,8 +64,21 @@ namespace FastCgi.ImmutableArray
 			if ((sourceIndex + length) > data.Length)
 				throw new ArgumentOutOfRangeException("The sourceIndex and length specified overcome the source ByteArray length");
 
+            foreach (var buffer in _bufferManager.Allocate(length))
+            {
+                var part = Math.Min(buffer.Length, length);
+                Array.Copy(data, sourceIndex, buffer, 0, part);
+                yield return new ImmutableArrayInternal<T>(sourceIndex, buffer, part);
+
+                sourceIndex += part;
+                length -= part;
+            }
+        }
+
+		private ImmutableArrayInternal(int sourceIndex, T[] data, int length)
+		{
 			_offset = 0;
-			_data = ImmutableArrayInternal<T>.AllocInternalArray(sourceIndex, data, length);
+            _data = data;
 			_length = length;
 		}
 
@@ -93,13 +107,6 @@ namespace FastCgi.ImmutableArray
 			_data = data.Data;
 			_length = length;
             _source = data;
-		}
-
-		public ImmutableArrayInternal(ICollection<T> array)
-		{
-			_offset = 0;
-			_data = AllocInternalArray(array);
-			_length = array.Count;
 		}
 		#endregion
 
@@ -267,47 +274,6 @@ namespace FastCgi.ImmutableArray
 					return false;
 
 			return true;
-		}
-		#endregion
-
-		#region Static private methods
-		/// <summary>
-		/// This method allocates a mutable array
-		/// </summary>
-		/// <param name="length">Length of the new array</param>
-		/// <returns>Allocated array</returns>
-		private static T[] AllocInternalArray(int length)
-		{
-            return _bufferManager.Allocate();
-		}
-
-		/// <summary>
-		/// This methods allocates a mutable array and copies all the colletion elements to it
-		/// </summary>
-		/// <param name="collection">Collection to copy elements from</param>
-		/// <returns>Array</returns>
-		private static T[] AllocInternalArray(ICollection<T> collection)
-		{
-			T[] ret = ImmutableArrayInternal<T>.AllocInternalArray(collection.Count);
-			collection.CopyTo(ret, 0);
-			return ret;
-		}
-
-		/// <summary>
-		/// This method allocates a copy of the specified array
-		/// </summary>
-		/// <param name="sourceIndex">Index to start the copy</param>
-		/// <param name="data">Array of data to be copied</param>
-		/// <param name="length">Length od data to topy</param>
-		/// <returns>A partial/complete clone of the specified array</returns>
-		private static T[] AllocInternalArray(int sourceIndex, T[] data, int length)
-		{
-			if (length == 0)
-				return EmptyArray;
-
-			T[] ret = ImmutableArrayInternal<T>.AllocInternalArray(length);
-			Array.Copy(data, sourceIndex, ret, 0, length);
-			return ret;
 		}
 		#endregion
 	}
