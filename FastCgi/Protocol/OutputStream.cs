@@ -34,7 +34,7 @@ namespace Grillisoft.FastCgi.Protocol
 	/// </summary>
 	public class OutputStream : Stream
 	{
-		private MemoryStream _chache = new MemoryStream(256);
+		private MemoryStream _cache = new MemoryStream(256);
 
 		public event EventHandler<FlushEventArgs> Flushing;
 
@@ -95,11 +95,19 @@ namespace Grillisoft.FastCgi.Protocol
 			throw new NotSupportedException();
 		}
 
+        /// <summary>
+        /// Free space in cache
+        /// </summary>
+        private int FreeCache
+        {
+            get { return _cache.Capacity - (int)_cache.Length; }
+        }
+
 		public override void Write(byte[] buffer, int offset, int count)
 		{
-			if (count <= 16)
+			if (count <= this.FreeCache)
 			{
-				_chache.Write(buffer, offset, count);
+				_cache.Write(buffer, offset, count);
 			}
 			else
 			{
@@ -110,11 +118,11 @@ namespace Grillisoft.FastCgi.Protocol
 
 		private void WriteCache()
 		{
-			if (_chache.Length <= 0)
+			if (_cache.Length <= 0)
 				return;
 
-			_array.Concat(new ByteArray(_chache.ToArray()), true);
-			_chache.SetLength(0);
+			_array.Concat(new ByteArray(_cache.ToArray()), true);
+			_cache.SetLength(0);
 		}
 	}
 
