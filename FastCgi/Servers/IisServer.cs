@@ -12,13 +12,17 @@ using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 using System.IO;
 
-namespace Grillisoft.FastCgi.NamedPipes
+namespace Grillisoft.FastCgi.Servers
 {
-    public abstract class NamedPipeServer : ILowerLayer
+    public class IisServer : IFastCgiServer, ILowerLayer
     {
         private readonly Stream _server;
+        private readonly Thread _thread;
+        private readonly IFastCgiChannelFactory _channelFactory;
+        private readonly ILogger _logger;
         private readonly byte[] _recvBuffer = new byte[4096];
         private readonly byte[] _sendBuffer = new byte[4096];
+        private bool _running = false;
 
         //private readonly Regex ParsePath = new Regex(@"\\\\([^\\]+)\\pipe\\([^\\]+)");
 
@@ -31,12 +35,15 @@ namespace Grillisoft.FastCgi.NamedPipes
 
         private static IntPtr StandardInputHandle { get { return GetStdHandle(STD_INPUT_HANDLE); } }
 
-        public NamedPipeServer(string path)
+        public IisServer(IFastCgiChannelFactory channelFactory, ILoggerFactory loggerFactory)
         {
-            //var match = ParsePath.Match(path);
-
             var handle = new SafeFileHandle(StandardInputHandle, true);
+
+            _channelFactory = channelFactory;
+            _logger = loggerFactory.Create(this.GetType());
+
             _server = new FileStream(handle, FileAccess.ReadWrite, 4096, false);
+            _thread = new Thread(this.Run);
         }
 
         /// <summary>
@@ -44,20 +51,39 @@ namespace Grillisoft.FastCgi.NamedPipes
         /// </summary>
         public IUpperLayer UpperLayer { get; set; }
 
-        public void Run()
+        public void Start()
         {
-            int read = 0;
+            _logger.Log(LogLevel.Info, "Starting IIS server");
+            _running = true;
+            _thread.Start();
+        }
 
-            this.UpperLayer = this.CreateChannel(this);
+        public void Stop()
+        {
+            _logger.Log(LogLevel.Info, "Stopping IIS server");
+            _running = false;
+            _thread.Abort();
+        }
 
-            while(read >= 0)
+        private void Run()
+        {
+            try
             {
-                read = _server.Read(_recvBuffer, 0, _recvBuffer.Length);
-                if (read > 0)
-                    this.UpperLayer.Receive(new ByteArray(_recvBuffer, (int)read));
-            }
+                this.UpperLayer = _channelFactory.CreateChannel(this);
 
-            _server.Close();
+                int read = 0;
+
+                while (_running && read >= 0)
+                {
+                    read = _server.Read(_recvBuffer, 0, _recvBuffer.Length);
+                    if (read > 0)
+                        this.UpperLayer.Receive(new ByteArray(_recvBuffer, (int)read));
+                }
+            }
+            finally
+            {
+                _server.Close();
+            }
         }
 
         public void Send(ByteArray data)
@@ -76,11 +102,5 @@ namespace Grillisoft.FastCgi.NamedPipes
                 _server.Flush();
             }
         }
-
-        /// <summary>
-        /// Creates a new FastCgiChannel
-        /// </summary>
-        /// <param name="tcpLayer">Lower <see cref="TcpLayer"/> used to communicate with the web server</param>
-        protected abstract FastCgiChannel CreateChannel(ILowerLayer tcpLayer);
-    }
+   }
 }

@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Web.Hosting;
-using Grillisoft.FastCgi.Tcp;
+using Grillisoft.FastCgi.Servers;
 using Grillisoft.FastCgi.AspNet;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Grillisoft.FastCgi.Test
 {
@@ -14,35 +15,36 @@ namespace Grillisoft.FastCgi.Test
 	{
 		static int Main(string[] args)
 		{
-            //Debugger.Launch();
+            var logger = LoggerFactory.Create("Test");
+            logger.Log(LogLevel.Info, "Starting fastcgi server");
 
-            //var values = Environment.GetEnvironmentVariables();
-            //foreach (var key in values.Keys)
-            //{
-            //    Debug.WriteLine("{0}: {1}", key, values[key]);
-            //}
+            var server = CreateServer();
+            server.Start();
 
-            //RunNamedPipeServer();
-            RunTcpServer();
+            while(true)
+            {
+                Thread.Sleep(1000);
+            }
+
             return 0;
 		}
 
-        private static void RunTcpServer()
+        private static IFastCgiServer CreateServer()
         {
-            SimpleTcpServer server = new SimpleTcpServer();
-            server.Start();
-
-            Console.WriteLine("Press any key to stop the fastcgi server");
-            Console.ReadKey();
-
-            server.Stop();
+            return new IisServer(new SimpleChannelFactory(LoggerFactory), LoggerFactory);
         }
 
-        private static void RunNamedPipeServer()
+        private static ILoggerFactory _loggerFactory;
+
+        private static ILoggerFactory LoggerFactory
         {
-            var path = Environment.GetEnvironmentVariable("_FCGI_X_PIPE_");
-            SimpleNamedPipeServer server = new SimpleNamedPipeServer(path);
-            server.Run();
+            get
+            {
+                if (_loggerFactory != null)
+                    return _loggerFactory;
+
+                return _loggerFactory = new Grillisoft.FastCgi.Loggers.Log4Net.LoggerFactory();
+            }
         }
 	}
 }

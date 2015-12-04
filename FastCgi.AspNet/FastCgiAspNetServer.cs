@@ -5,13 +5,13 @@ using System.Runtime.Remoting;
 using System.Threading;
 using System.Web.Hosting;
 using Grillisoft.FastCgi.Protocol;
-using Grillisoft.FastCgi.Tcp;
+using Grillisoft.FastCgi.Servers;
 
 namespace Grillisoft.FastCgi.AspNet
 {
     public class FastCgiAspNetServer : MarshalByRefObject
     {
-        private ServerInternal _server;
+        //private ServerInternal _server;
 
         /// <summary>
         /// Create a fastcgi server
@@ -23,7 +23,7 @@ namespace Grillisoft.FastCgi.AspNet
         public static FastCgiAspNetServer CreateApplicationHost(int port, string virtualPath, string physicalPath)
         {
             var ret = (FastCgiAspNetServer)ApplicationHost.CreateApplicationHost(typeof(FastCgiAspNetServer), virtualPath, physicalPath);
-            ret.Initialize(port, virtualPath, physicalPath);
+            //ret.Initialize(port, virtualPath, physicalPath);
             return ret;
         }
 
@@ -34,7 +34,7 @@ namespace Grillisoft.FastCgi.AspNet
 
         internal void Initialize(int port, string virtualPath, string physicalPath)
         {
-            _server = new ServerInternal(port, virtualPath, physicalPath);
+            //_server = new ServerInternal(port, virtualPath, physicalPath);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Grillisoft.FastCgi.AspNet
         /// </summary>
 		public void Start()
 		{
-			_server.Start();
+			//_server.Start();
 		}
 
         /// <summary>
@@ -50,54 +50,7 @@ namespace Grillisoft.FastCgi.AspNet
         /// </summary>
 		public void Stop()
 		{
-			_server.Stop();
+			//_server.Stop();
 		}
-    }
-	
-	internal class ServerInternal : TcpServer
-	{
-        internal ServerInternal(int port, string virtualPath, string physicalPath)
-			: base(port)
-        {
-            this.VirtualPath = virtualPath;
-            this.PhysicalPath = physicalPath;
-        }
-
-        public string VirtualPath { get; private set; }
-
-        public string PhysicalPath { get; private set; }
-
-		protected override FastCgiChannel CreateChannel(ILowerLayer layer)
-		{
-            var channel = new CustomAspNetChannel(this);
-            channel.LowerLayer = layer;
-            return channel;
-		}
-
-        internal class CustomAspNetChannel : SimpleFastCgiChannel<CustomAspNetRequest>
-        {
-            private readonly ServerInternal _server;
-
-            internal CustomAspNetChannel(ServerInternal server)
-            {
-                _server = server;
-            }
-
-            protected override Request CreateRequest(ushort requestId, Protocol.BeginRequestMessageBody body)
-            {
-                return new CustomAspNetRequest(requestId, body, _server);
-            }
-        }
-
-        internal class CustomAspNetRequest : AspNetRequest
-        {
-            public CustomAspNetRequest(ushort id, BeginRequestMessageBody body, ServerInternal server)
-                : base(id, body)
-            {
-                //these must be the same values used when calling ApplicationHost.CreateApplicationHost
-                this.VirtualPath = server.VirtualPath;
-                this.PhysicalPath = server.PhysicalPath;
-            }
-        }
-	}
+    }	
 }

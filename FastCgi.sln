@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastCgi.UnitTest", "FastCgi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableArray", "ImmutableArray\ImmutableArray.csproj", "{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastCgi.Loggers.Log4Net", "FastCgi.Loggers.Log4Net\FastCgi.Loggers.Log4Net.csproj", "{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,16 @@ Global
 		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}.Release|x86.ActiveCfg = Release|Any CPU
+		{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

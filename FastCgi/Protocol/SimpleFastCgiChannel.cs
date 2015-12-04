@@ -33,9 +33,10 @@ namespace Grillisoft.FastCgi.Protocol
 	/// A <see cref="FastCgiChannel"/> that can handle only one request at a time
 	/// </summary>
 	/// <typeparam name="TRequest">Request type handled by the channel</typeparam>
-	public abstract class SimpleFastCgiChannel<TRequest> : FastCgiChannel where TRequest : Request
+	public abstract class SimpleFastCgiChannel : FastCgiChannel
 	{
-		public SimpleFastCgiChannel()
+		public SimpleFastCgiChannel(ILowerLayer layer, ILoggerFactory loggerFactory)
+            : base(layer, new Repositories.SingleRequestRepository(), loggerFactory)
 		{
 			this.Properties = new Protocol.ChannelProperties()
 			{
@@ -43,23 +44,6 @@ namespace Grillisoft.FastCgi.Protocol
 				MaximumRequests = 1,
 				SupportMultiplexedConnection = false
 			};
-		}
-
-		protected TRequest Request { get; set; }
-
-		protected override void AddRequest(Request request)
-		{
-			this.Request = (TRequest)request;
-		}
-
-		protected override void RemoveRequest(Request request)
-		{
-			this.Request = null;
-		}
-
-		protected override Request GetRequest(ushort requestId)
-		{
-			return this.Request;
 		}
 	}
 }

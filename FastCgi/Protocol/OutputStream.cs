@@ -112,7 +112,7 @@ namespace Grillisoft.FastCgi.Protocol
 			else
 			{
 				this.WriteCache();
-				_array.Concat(new ByteArray(buffer, count, offset), true);
+				_array = _array.Concat(new ByteArray(buffer, count, offset), true);
 			}
 		}
 
@@ -121,7 +121,7 @@ namespace Grillisoft.FastCgi.Protocol
 			if (_cache.Length <= 0)
 				return;
 
-			_array.Concat(new ByteArray(_cache.ToArray()), true);
+			_array = _array.Concat(new ByteArray(_cache.ToArray()), true);
 			_cache.SetLength(0);
 		}
 	}

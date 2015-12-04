@@ -36,16 +36,19 @@ namespace Grillisoft.FastCgi.AspNet
 {
 	public class AspNetRequest : Request
 	{
-		public AspNetRequest(ushort id, BeginRequestMessageBody body)
+        private IAspNetRequestConfig _config;
+
+		public AspNetRequest(ushort id, BeginRequestMessageBody body, IAspNetRequestConfig config)
 			: base(id, body)
 		{
+            _config = config;
 			this.Status = String.Empty;
 			this.Headers = new NameValueCollection();
 		}
 
-		public string VirtualPath { get; set; }
+        public string VirtualPath { get { return _config.VirtualPath; } }
 
-		public string PhysicalPath { get; set; }
+        public string PhysicalPath { get { return _config.PhysicalPath; } }
 
 		public bool HeaderSent { get; protected set; }
 

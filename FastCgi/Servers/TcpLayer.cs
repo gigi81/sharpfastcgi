@@ -29,9 +29,9 @@ using Grillisoft.FastCgi.Protocol;
 using ByteArray = Grillisoft.ImmutableArray.ImmutableArray<byte>;
 using Grillisoft.ImmutableArray;
 
-namespace Grillisoft.FastCgi.Tcp
+namespace Grillisoft.FastCgi.Servers
 {
-	public class TcpLayer : ILowerLayer, IDisposable
+	internal class TcpLayer : ILowerLayer, IDisposable
 	{
 		public event EventHandler<UnhandledExceptionEventArgs> RunError;
 

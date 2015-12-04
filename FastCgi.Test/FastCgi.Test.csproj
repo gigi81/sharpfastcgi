@@ -51,6 +51,9 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -60,17 +63,21 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleChannel.cs" />
-    <Compile Include="SimpleNamedPipeServer.cs" />
+    <Compile Include="SimpleChannelFactory.cs" />
     <Compile Include="SimpleRequest.cs" />
-    <Compile Include="SimpleTcpServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FastCgi.AspNet\FastCgi.AspNet.csproj">
       <Project>{315E3781-3E29-459B-A0D6-EF880F60D6E0}</Project>
       <Name>FastCgi.AspNet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FastCgi.Loggers.Log4Net\FastCgi.Loggers.Log4Net.csproj">
+      <Project>{ee31060b-980b-4e24-ae84-0df6a0f0e95d}</Project>
+      <Name>FastCgi.Loggers.Log4Net</Name>
     </ProjectReference>
     <ProjectReference Include="..\FastCgi\FastCgi.csproj">
       <Project>{A3C516B6-046B-44C2-9387-2D01646589C9}</Project>
@@ -98,6 +105,11 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="log4net.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

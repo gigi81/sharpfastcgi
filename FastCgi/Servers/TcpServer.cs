@@ -31,25 +31,44 @@ using System.Net.Sockets;
 using System.Threading;
 using Grillisoft.FastCgi.Protocol;
 
-namespace Grillisoft.FastCgi.Tcp
+namespace Grillisoft.FastCgi.Servers
 {
 	/// <summary>
 	/// TcpServer to listen for incoming fastcgi connections
 	/// </summary>
-	public abstract class TcpServer
+	public class TcpServer : IFastCgiServer
 	{
+        private const int DefaultPort = 9000;
+
 		public event EventHandler<UnhandledExceptionEventArgs> AcceptError;
 		public event EventHandler<UnhandledExceptionEventArgs> ChannelError;
 
 		private readonly TcpListener _listener;
         private int _socketCount = 0;
+        private IFastCgiChannelFactory _channelFactory;
+
+        /// <summary>
+        /// Creates a new TcpServer listening on 127.0.0.1 on port 9000
+        /// </summary>
+        protected TcpServer(IFastCgiChannelFactory factory)
+            : this(IPAddress.Any /* Ipv4 */, DefaultPort, factory)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new TcpServer
+        /// </summary>
+        protected TcpServer(IFastCgiChannelFactory factory, ITcpServerConfig config)
+            : this(config.Address, config.Port, factory)
+        {
+        }
 
 		/// <summary>
 		/// Creates a new TcpServer listening on 127.0.0.1 on the port specified
 		/// </summary>
 		/// <param name="port">TCP/IP port to listen for incoming connections</param>
-		protected TcpServer(int port)
-			: this(IPAddress.Any /* Ipv4 */, port)
+		protected TcpServer(int port, IFastCgiChannelFactory factory)
+			: this(IPAddress.Any /* Ipv4 */, port, factory)
 		{
 		}
 
@@ -58,8 +77,9 @@ namespace Grillisoft.FastCgi.Tcp
 		/// </summary>
 		/// <param name="address">Address to listen for incoming connections</param>
 		/// <param name="port">TCP/IP port to listen for incoming connections</param>
-		protected TcpServer(IPAddress address, int port)
+        protected TcpServer(IPAddress address, int port, IFastCgiChannelFactory factory)
 		{
+            _channelFactory = factory;
 			_listener = new TcpListener(address, port);
 		}
 
@@ -124,7 +144,7 @@ namespace Grillisoft.FastCgi.Tcp
 			try
 			{
                 var layer = new TcpLayer(client);
-				var channel = this.CreateChannel(layer);
+				var channel = _channelFactory.CreateChannel(layer);
                 channel.RequestEnded += (sender, e) => {
                     if (!((Request)sender).RequestBody.KeepConnection)
                         layer.Close();
@@ -137,12 +157,6 @@ namespace Grillisoft.FastCgi.Tcp
 				this.OnChannelError(new UnhandledExceptionEventArgs(ex, false));
 			}
 		}
-
-		/// <summary>
-		/// Creates a new FastCgiChannel
-		/// </summary>
-		/// <param name="tcpLayer">Lower <see cref="TcpLayer"/> used to communicate with the web server</param>
-		protected abstract FastCgiChannel CreateChannel(ILowerLayer layer);
 
 		protected virtual void OnAcceptError(UnhandledExceptionEventArgs args)
 		{

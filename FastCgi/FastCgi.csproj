@@ -41,7 +41,15 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NamedPipe\NamedPipeServer.cs" />
+    <Compile Include="IFastCgiChannelFactory.cs" />
+    <Compile Include="IFastCgiServer.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="ILoggerFactory.cs" />
+    <Compile Include="Protocol\IRequestsRepository.cs" />
+    <Compile Include="Repositories\SyncronizedRequestsRepository.cs" />
+    <Compile Include="Repositories\RequestsRepository.cs" />
+    <Compile Include="Repositories\SingleRequestRepository.cs" />
+    <Compile Include="Servers\IisServer.cs" />
     <Compile Include="Protocol\ILayer.cs" />
     <Compile Include="Protocol\InputStream.cs" />
     <Compile Include="Protocol\ChannelProperties.cs" />
@@ -56,8 +64,9 @@
     <Compile Include="Protocol\MessageHeader.cs" />
     <Compile Include="Protocol\Request.cs" />
     <Compile Include="Protocol\SimpleFastCgiChannel.cs" />
-    <Compile Include="Tcp\TcpLayer.cs" />
-    <Compile Include="Tcp\TcpServer.cs" />
+    <Compile Include="Servers\ITcpServerConfig.cs" />
+    <Compile Include="Servers\TcpLayer.cs" />
+    <Compile Include="Servers\TcpServer.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

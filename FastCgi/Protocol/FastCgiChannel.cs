@@ -36,20 +36,36 @@ namespace Grillisoft.FastCgi.Protocol
 	/// </summary>
 	public abstract class FastCgiChannel : IUpperLayer
 	{
+        private readonly ILowerLayer _lowerLayer;
+        private readonly IRequestsRepository _requestsRepository;
+        private readonly ILogger _logger;
+
 		/// <summary>
 		/// Event generated when a request is ended
 		/// </summary>
 		public event EventHandler RequestEnded;
+
+        /// <summary>
+        /// The logger for this channel
+        /// </summary>
+        protected ILogger Logger { get { return _logger; } }
 
 		/// <summary>
 		/// Receive buffer
 		/// </summary>
 		private ByteArray _recvBuffer = ByteArray.Empty;
 
+        public FastCgiChannel(ILowerLayer layer, IRequestsRepository requestsRepository, ILoggerFactory loggerFactory)
+        {
+            _lowerLayer = layer;
+            _requestsRepository = requestsRepository;
+            _logger = loggerFactory.Create(this.GetType());
+        }
+
 		/// <summary>
 		/// Lower layer to send messages to the FastCGI client
 		/// </summary>
-		public ILowerLayer LowerLayer { get; set; }
+        public ILowerLayer LowerLayer { get { return _lowerLayer; } }
 
 		/// <summary>
 		/// Channel properties as required by protocol specifications
@@ -83,31 +99,34 @@ namespace Grillisoft.FastCgi.Protocol
 		/// <param name="message"></param>
 		protected virtual void ReceiveMessage(Message message)
 		{
-			ushort requestId = message.Header.RequestId;
+			var requestId = message.Header.RequestId;
+            var requestType = message.Header.MessageType;
 
-			switch (message.Header.MessageType)
+            _logger.Log(LogLevel.Verbose, "Received message (request {0}) {1} of length {2}", requestId, requestType, message.Body.Count);
+
+			switch (requestType)
 			{
 				case MessageType.BeginRequest:
 					this.BeginRequest(message);
 					break;
 
 				case MessageType.AbortRequest:
-					this.GetRequest(requestId).Abort();
+                    _requestsRepository.GetRequest(requestId).Abort();
 					break;
 
 				case MessageType.Params:
-					this.GetRequest(requestId).ParametersStream.Append(message.Body);
+                    _requestsRepository.GetRequest(requestId).ParametersStream.Append(message.Body);
 					break;
 
 				case MessageType.StandardInput:
 					if (message.Header.ContentLength > 0)
-						this.GetRequest(requestId).InputStream.Append(message.Body);
+                        _requestsRepository.GetRequest(requestId).InputStream.Append(message.Body);
 					else
-						this.GetRequest(requestId).Execute();
+                        _requestsRepository.GetRequest(requestId).Execute();
 					break;
 
 				case MessageType.Data:
-					this.GetRequest(requestId).DataStream.Append(message.Body);
+                    _requestsRepository.GetRequest(requestId).DataStream.Append(message.Body);
 					break;
 
 				case MessageType.GetValues:
@@ -162,7 +181,7 @@ namespace Grillisoft.FastCgi.Protocol
 			if (message.Body.Count < Consts.ChunkSize)
 				return;
 
-			this.AddRequest(CreateRequestInternal(message));
+            _requestsRepository.AddRequest(CreateRequestInternal(message));
 		}
 
         private Request CreateRequestInternal(Message message)
@@ -199,7 +218,7 @@ namespace Grillisoft.FastCgi.Protocol
 		protected virtual void EndRequest(Request request)
 		{
             this.SendMessages(this.CreateEndRequestMessages(request));
-			this.RemoveRequest(request);
+            _requestsRepository.RemoveRequest(request);
 		}
 
         private IEnumerable<Message> CreateEndRequestMessages(Request request)
@@ -247,19 +266,10 @@ namespace Grillisoft.FastCgi.Protocol
 		/// <param name="message"><typeparamref name="Message"/> to send</param>
 		protected virtual void SendMessage(Message message)
 		{
+            _logger.Log(LogLevel.Verbose, "Sending message (request {0}) {1} of length {2}", message.Header.RequestId, message.Header.MessageType, message.Body.Count);
 			this.LowerLayer.Send(message.ToByteArray());
 		}
 
-		#region Abstract methods
-
-		protected abstract Request CreateRequest(ushort requestId, BeginRequestMessageBody body);
-
-		protected abstract void AddRequest(Request request);
-
-		protected abstract void RemoveRequest(Request request);
-
-		protected abstract Request GetRequest(ushort requestId);
-
-		#endregion
+        protected abstract Request CreateRequest(ushort requestId, BeginRequestMessageBody body);
 	}
 }

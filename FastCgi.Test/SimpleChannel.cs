@@ -1,42 +1,21 @@
-﻿using System;
+﻿using Grillisoft.FastCgi.Protocol;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Grillisoft.FastCgi.Test
 {
-    public class SimpleChannel : Grillisoft.FastCgi.Protocol.FastCgiChannel
+    public class SimpleChannel : Grillisoft.FastCgi.Protocol.SimpleFastCgiChannel
     {
-        private Dictionary<ushort, SimpleRequest> _request = new Dictionary<ushort, SimpleRequest>();
-
-        public SimpleChannel()
+        public SimpleChannel(ILowerLayer layer, ILoggerFactory loggerFactory)
+            : base(layer, loggerFactory)
         {
-            this.Properties = new Protocol.ChannelProperties()
-            {
-                MaximumConnections = 128,
-                MaximumRequests = 128,
-                SupportMultiplexedConnection = false
-            };
         }
 
         protected override Protocol.Request CreateRequest(ushort requestId, Protocol.BeginRequestMessageBody body)
         {
             return new SimpleRequest(requestId, body);
-        }
-
-        protected override void AddRequest(Protocol.Request request)
-        {
-            _request.Add(request.Id, (SimpleRequest)request);
-        }
-
-        protected override void RemoveRequest(Protocol.Request request)
-        {
-            _request.Remove(request.Id);
-        }
-
-        protected override Protocol.Request GetRequest(ushort requestId)
-        {
-            return _request[requestId];
         }
     }
 }
