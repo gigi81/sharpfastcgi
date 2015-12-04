@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2EA7BA06-B06C-4296-A8B7-E5DB3E9268B5}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -44,10 +42,11 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AspNetConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TcpServerConfig.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="AspNetRequestConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FastCgi.AspNet\FastCgi.AspNet.csproj">
@@ -59,8 +58,12 @@
       <Name>FastCgi</Name>
     </ProjectReference>
     <ProjectReference Include="..\ImmutableArray\ImmutableArray.csproj">
-      <Project>{afe9fdde-332c-41a5-8da5-6c974f9e6956}</Project>
+      <Project>{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}</Project>
       <Name>ImmutableArray</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FastCgi.Loggers.Log4Net\FastCgi.Loggers.Log4Net.csproj">
+      <Project>{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}</Project>
+      <Name>FastCgi.Loggers.Log4Net</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

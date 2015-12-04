@@ -6,14 +6,19 @@ using System.Text;
 using System.Web.Hosting;
 using Grillisoft.FastCgi.AspNet;
 using System.Configuration;
+using Grillisoft.FastCgi.Servers;
 
 namespace Grillisoft.FastCgi.Server
 {
     class Program
     {
+		private static ILoggerFactory loggerFactory;
+
         static void Main(string[] args)
         {
-			var server = FastCgiAspNetServer.CreateApplicationHost(Config.Port, Config.VirtualPath, Config.PhysicalPath);
+			loggerFactory = new Grillisoft.FastCgi.Loggers.Log4Net.LoggerFactory();
+
+			var server = FastCgiAspNetServer.CreateApplicationHost(Config.Address, Config.Port, Config.VirtualPath, Config.PhysicalPath, loggerFactory);
             server.Start();
 
 			Console.WriteLine ("Listening on port {0}", Config.Port);

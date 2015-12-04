@@ -50,7 +50,7 @@ namespace Grillisoft.FastCgi.Servers
         /// <summary>
         /// Creates a new TcpServer listening on 127.0.0.1 on port 9000
         /// </summary>
-        protected TcpServer(IFastCgiChannelFactory factory)
+        public TcpServer(IFastCgiChannelFactory factory)
             : this(IPAddress.Any /* Ipv4 */, DefaultPort, factory)
         {
         }
@@ -58,7 +58,7 @@ namespace Grillisoft.FastCgi.Servers
         /// <summary>
         /// Creates a new TcpServer
         /// </summary>
-        protected TcpServer(IFastCgiChannelFactory factory, ITcpServerConfig config)
+        public TcpServer(IFastCgiChannelFactory factory, ITcpServerConfig config)
             : this(config.Address, config.Port, factory)
         {
         }
@@ -67,7 +67,7 @@ namespace Grillisoft.FastCgi.Servers
 		/// Creates a new TcpServer listening on 127.0.0.1 on the port specified
 		/// </summary>
 		/// <param name="port">TCP/IP port to listen for incoming connections</param>
-		protected TcpServer(int port, IFastCgiChannelFactory factory)
+		public TcpServer(int port, IFastCgiChannelFactory factory)
 			: this(IPAddress.Any /* Ipv4 */, port, factory)
 		{
 		}
@@ -77,7 +77,7 @@ namespace Grillisoft.FastCgi.Servers
 		/// </summary>
 		/// <param name="address">Address to listen for incoming connections</param>
 		/// <param name="port">TCP/IP port to listen for incoming connections</param>
-        protected TcpServer(IPAddress address, int port, IFastCgiChannelFactory factory)
+        public TcpServer(IPAddress address, int port, IFastCgiChannelFactory factory)
 		{
             _channelFactory = factory;
 			_listener = new TcpListener(address, port);

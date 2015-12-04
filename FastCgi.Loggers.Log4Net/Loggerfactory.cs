@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Grillisoft.FastCgi.Loggers.Log4Net
 {
+	[Serializable]
     public class LoggerFactory : Grillisoft.FastCgi.ILoggerFactory
     {
         public Grillisoft.FastCgi.ILogger Create(Type type)

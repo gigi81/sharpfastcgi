@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Runtime.Remoting;
 using System.Threading;
 using System.Web.Hosting;
@@ -11,7 +12,7 @@ namespace Grillisoft.FastCgi.AspNet
 {
     public class FastCgiAspNetServer : MarshalByRefObject
     {
-        //private ServerInternal _server;
+		private IFastCgiServer _server;
 
         /// <summary>
         /// Create a fastcgi server
@@ -20,21 +21,26 @@ namespace Grillisoft.FastCgi.AspNet
         /// <param name="virtualPath">Virtual path of your ASP.NET application</param>
         /// <param name="physicalPath">Physical path of your ASP.NET application</param>
         /// <returns></returns>
-        public static FastCgiAspNetServer CreateApplicationHost(int port, string virtualPath, string physicalPath)
+		public static FastCgiAspNetServer CreateApplicationHost(IPAddress address, int port, string virtualPath, string physicalPath, ILoggerFactory loggerFactory)
         {
             var ret = (FastCgiAspNetServer)ApplicationHost.CreateApplicationHost(typeof(FastCgiAspNetServer), virtualPath, physicalPath);
-            //ret.Initialize(port, virtualPath, physicalPath);
+			ret.CreateServer (address, port, virtualPath, physicalPath, loggerFactory);
             return ret;
         }
+
+		private void CreateServer(IPAddress address, int port, string virtualPath, string physicalPath, ILoggerFactory loggerFactory)
+		{
+			var channelFactory = new AspNetChannelFactory (loggerFactory, new AspNetRequestConfig {
+				VirtualPath = virtualPath,
+				PhysicalPath = physicalPath
+			});
+
+			_server = new TcpServer(address, port, channelFactory);
+		}
 
         public override object InitializeLifetimeService()
         {
             return null; //never expire lease
-        }
-
-        internal void Initialize(int port, string virtualPath, string physicalPath)
-        {
-            //_server = new ServerInternal(port, virtualPath, physicalPath);
         }
 
         /// <summary>
@@ -42,7 +48,7 @@ namespace Grillisoft.FastCgi.AspNet
         /// </summary>
 		public void Start()
 		{
-			//_server.Start();
+			_server.Start();
 		}
 
         /// <summary>
@@ -50,7 +56,7 @@ namespace Grillisoft.FastCgi.AspNet
         /// </summary>
 		public void Stop()
 		{
-			//_server.Stop();
+			_server.Stop();
 		}
     }	
 }

@@ -29,8 +29,10 @@ namespace Grillisoft.FastCgi.Server
 		{
 			get
 			{
+				var value = ConfigurationManager.AppSettings ["Address"];
+
 				IPAddress ret;
-				if (IPAddress.TryParse(ConfigurationManager.AppSettings["Address"], out ret))
+				if (!String.IsNullOrWhiteSpace(value) && IPAddress.TryParse(ConfigurationManager.AppSettings["Address"], out ret))
 					return ret;
 
 				return DefaultAddress;
