@@ -254,6 +254,7 @@ namespace Grillisoft.ImmutableArray
 			return !array1.Equals(array2);
 		}
 
+		#if !__MonoCS__
 		public static bool operator ==(ImmutableArray<T> array1, T[] array2)
 		{
 			return array1.Equals(array2);
@@ -261,8 +262,9 @@ namespace Grillisoft.ImmutableArray
 
 		public static bool operator !=(ImmutableArray<T> array1, T[] array2)
 		{
-			return array1.Equals(array2);
+			return !array1.Equals(array2);
 		}
+		#endif
 
 		/// <summary>
 		/// Creates a copy of this immutable array to a mutable array
