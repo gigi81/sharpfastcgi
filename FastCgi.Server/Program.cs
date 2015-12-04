@@ -13,14 +13,14 @@ namespace Grillisoft.FastCgi.Server
     {
         static void Main(string[] args)
         {
-            //var server = FastCgiAspNetServer.CreateApplicationHost(Port, VirtualPath, PhysicalPath);
-            //server.Start();
+			var server = FastCgiAspNetServer.CreateApplicationHost(Config.Port, Config.VirtualPath, Config.PhysicalPath);
+            server.Start();
 
-            //Console.WriteLine ("Listening on port {0}", Port);
-            //Console.WriteLine("Press any key to stop the fastcgi server");
-            //Console.ReadKey();
+			Console.WriteLine ("Listening on port {0}", Config.Port);
+            Console.WriteLine("Press any key to stop the fastcgi server");
+            Console.ReadKey();
 
-            //server.Stop();
+            server.Stop();
         }
     }
 }
