@@ -40,9 +40,10 @@ namespace Grillisoft.ImmutableArray
 		/// </summary>
 		public static readonly ImmutableArray<T> Empty = new ImmutableArray<T>(new T[0]);
 
-		private List<ImmutableArrayInternal<T>> _arrays = new List<ImmutableArrayInternal<T>>();
-		private List<int> _offsets = new List<int>();
+		private readonly List<ImmutableArrayInternal<T>> _arrays = new List<ImmutableArrayInternal<T>>();
+		private readonly List<int> _offsets = new List<int>();
 		private int _length = 0;
+        private bool _disposed = false;
 
 		#region Constructors and Destructor
 		/// <summary>
@@ -584,10 +585,17 @@ namespace Grillisoft.ImmutableArray
 
         protected void Dispose(bool disposing)
         {
-            foreach (var array in _arrays)
-                array.DecreaseReferences();
+            lock(_arrays)
+            {
+                if (_disposed)
+                    return;
 
-            _arrays.Clear();
+                _disposed = true;
+                foreach (var array in _arrays)
+                    array.DecreaseReferences();
+
+                _arrays.Clear();
+            }
         }
         #endregion
     }
