@@ -7,25 +7,43 @@ using System.Web.Hosting;
 using Grillisoft.FastCgi.AspNet;
 using System.Configuration;
 using Grillisoft.FastCgi.Servers;
+using Topshelf;
+using log4net;
 
 namespace Grillisoft.FastCgi.Server
 {
     class Program
     {
-		private static ILoggerFactory loggerFactory;
+        private static readonly ILog Logger = log4net.LogManager.GetLogger(typeof(Program));
 
         static void Main(string[] args)
         {
-			loggerFactory = new Grillisoft.FastCgi.Loggers.Log4Net.LoggerFactory();
+            Logger.Info("Starting FastCgi Server");
 
-			var server = FastCgiAspNetServer.CreateApplicationHost(Config.Address, Config.Port, Config.VirtualPath, Config.PhysicalPath, loggerFactory);
-            server.Start();
+            HostFactory.Run(x =>
+            {
+                x.Service<FastCgiAspNetServer>(s =>
+                {
+                    s.ConstructUsing(name => CreateServer());
+                    s.WhenStarted(tc => {
+                        tc.Start();
+                        Logger.InfoFormat("Listening on {0}:{1}", Config.Address, Config.Port);
+                    });
+                    s.WhenStopped(tc => tc.Stop());
+                });
 
-			Console.WriteLine ("Listening on port {0}", Config.Port);
-            Console.WriteLine("Press any key to stop the fastcgi server");
-            Console.ReadKey();
+                x.SetDescription("Asp.NET FastCgi Service");
+                x.SetDisplayName("Asp.NET FastCgi Service");
+                x.SetServiceName("aspnet-fastcgi");
+                x.UseLinuxIfAvailable();
+                x.UseLog4Net();
+            });
+        }
 
-            server.Stop();
+        static FastCgiAspNetServer CreateServer()
+        {
+            var loggerFactory = new Loggers.Log4Net.LoggerFactory();
+            return FastCgiAspNetServer.CreateApplicationHost(Config.Address, Config.Port, Config.VirtualPath, Config.PhysicalPath, loggerFactory);
         }
     }
 }
