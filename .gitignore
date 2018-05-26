@@ -13,3 +13,4 @@ TestResults
 *.log
 *.pid
 packages
+/.vs
