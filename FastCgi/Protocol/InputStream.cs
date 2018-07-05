@@ -34,6 +34,7 @@ namespace Grillisoft.FastCgi.Protocol
     public class InputStream : Stream
     {
         private ByteArray _array;
+        private long position;
 
         public InputStream()
             : this(ByteArray.Empty)
@@ -72,12 +73,35 @@ namespace Grillisoft.FastCgi.Protocol
             get { return _array.Count; }
         }
 
-        public override long Position { get; /* TODO: add setter checks */ set; }
+        public override long Position
+        {
+            get
+            {
+                return position;
+            }
+
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentException("Position cannot be negative");
+                }
+
+                if (value > Length)
+                {
+                    throw new EndOfStreamException();
+                }
+
+                position = value;
+            }
+        }
         
         public override int Read(byte[] buffer, int offset, int count)
         {
+            // Many .Net libraries rely on a 0-byte read to signal end of stream
+            // because this is how the built-in framework streams work.
             if (this.Position == this.Length)
-                throw new EndOfStreamException();
+                return 0;
 
             int max = (int)(this.Length - this.Position);
             if (count > max)
