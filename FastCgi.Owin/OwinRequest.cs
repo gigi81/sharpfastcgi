@@ -74,7 +74,7 @@ namespace Grillisoft.FastCgi.Owin
                         context.Request.QueryString = new QueryString(nvp.Value);
                         continue;
                     case "HTTPS":
-                        context.Request.Scheme = nvp.Value.Equals("on", StringComparison.OrdinalIgnoreCase) ? "http" : "http";
+                        context.Request.Scheme = nvp.Value.Equals("on", StringComparison.OrdinalIgnoreCase) ? "https" : "http";
                         continue;
                     case "PATH_INFO":
                         context.Request.PathBase = new PathString(string.Empty);
