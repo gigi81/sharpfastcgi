@@ -9,9 +9,9 @@
     <licenseUrl>https://github.com/gigi81/sharpfastcgi/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/gigi81/sharpfastcgi</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>FastCgi core library</description>
+    <description>FastCgi Owin integration library</description>
     <releaseNotes>Initial nuget release</releaseNotes>
-    <copyright>Copyright 2018 Luigi Grilli</copyright>
-    <tags>fastcgi web server</tags>
+    <copyright>Copyright 2018 Luigi Grilli and Mike Davis</copyright>
+    <tags>fastcgi owin web server</tags>
   </metadata>
 </package>

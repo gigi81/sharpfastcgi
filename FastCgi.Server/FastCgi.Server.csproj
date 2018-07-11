@@ -35,9 +35,8 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=1.2.14.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.4\lib\net40-full\log4net.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,15 +45,12 @@
     <Reference Include="System.Configuration" />
     <Reference Include="Topshelf, Version=3.3.152.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
       <HintPath>..\packages\Topshelf.3.3.0\lib\net40-full\Topshelf.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Topshelf.Linux, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Topshelf.Linux.1.0.12.11\lib\Topshelf.Linux.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Topshelf.Log4Net, Version=3.3.152.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
       <HintPath>..\packages\Topshelf.Log4Net.3.3.0\lib\net40-full\Topshelf.Log4Net.dll</HintPath>
-      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

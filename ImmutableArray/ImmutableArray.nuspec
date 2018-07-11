@@ -9,9 +9,9 @@
     <licenseUrl>https://github.com/gigi81/sharpfastcgi/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/gigi81/sharpfastcgi</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>FastCgi core library</description>
+    <description>FastCgi Immutable Array library</description>
     <releaseNotes>Initial nuget release</releaseNotes>
     <copyright>Copyright 2018 Luigi Grilli</copyright>
-    <tags>fastcgi web server</tags>
+    <tags>fastcgi web server immutable array</tags>
   </metadata>
 </package>

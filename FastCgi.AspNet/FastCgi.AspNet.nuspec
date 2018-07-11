@@ -9,7 +9,7 @@
     <licenseUrl>https://github.com/gigi81/sharpfastcgi/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/gigi81/sharpfastcgi</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>FastCgi core library</description>
+    <description>FastCgi Aspnet integration library</description>
     <releaseNotes>Initial nuget release</releaseNotes>
     <copyright>Copyright 2018 Luigi Grilli</copyright>
     <tags>fastcgi web server</tags>
