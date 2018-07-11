@@ -1,0 +1,36 @@
+version: 1.0.0.{build}
+
+# branches to build
+branches:
+  # blacklist
+  except:
+    - gh-pages
+
+# build cache to preserve files/folders between builds
+cache:
+  - packages
+
+# enable patching of AssemblyInfo.* files
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "{version}"
+
+# build platform, i.e. x86, x64, Any CPU. This setting is optional.
+platform: Any CPU
+
+# build Configuration, i.e. Debug, Release, etc.
+configuration: Release
+
+before_build:
+  - nuget restore
+
+build:
+  parallel: true                # enable MSBuild parallel builds
+  project: FastCgi.sln          # path to Visual Studio solution or project
+  publish_nuget: true           # package projects with .nuspec files and push to artifacts
+  publish_nuget_symbols: false  # generate and publish NuGet symbol packages
+
+test:
