@@ -13,6 +13,30 @@ the ones that usually are implemented with an HttpListener.
 With this implementation is possible for example to host an ASP.NET application (also MVC)
 with and Nginx web-server on both Windows and Linux.
 
+Installing via NuGet
+============
+
+The easiest way to install FastCgi core library is via [NuGet](https://www.nuget.org/packages/Grillisoft.FastCgi/).
+
+In Visual Studio's [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console),
+enter the following command:
+
+```
+Install-Package Grillisoft.FastCgi
+```
+
+To add logging using log4net:
+
+```
+Install-Package Grillisoft.FastCgi.Loggers.Log4Net
+```
+
+To host an aspnet website:
+
+```
+Install-Package Grillisoft.FastCgi.AspNet
+```
+
 Example (Nginx)
 ============
 You can run the first example/test following this procedure:
@@ -90,4 +114,4 @@ A minimal example for IIS would look like this:
 
 Documentation
 ============
-You can also read this article I wrote about this library so you can have a deeper understanding of how it works: http://www.codeproject.com/Articles/388040/FastCGI-NET-and-ASP-NET-self-hosting
+You can also read this article I wrote about this library so you can have a deeper understanding on how it works: http://www.codeproject.com/Articles/388040/FastCGI-NET-and-ASP-NET-self-hosting
