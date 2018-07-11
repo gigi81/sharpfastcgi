@@ -12,9 +12,9 @@
     <releaseNotes>Initial nuget release</releaseNotes>
     <copyright>Copyright 2018 Luigi Grilli</copyright>
     <tags>fastcgi web server</tags>
+  
+    <dependencies>
+      <dependency id="Grillisoft.ImmutableArray" version="[$version$]" />
+    </dependencies>
   </metadata>
-
-  <dependencies>
-    <dependency id="Grillisoft.ImmutableArray" version="$version$" />
-  </dependencies>
 </package>
