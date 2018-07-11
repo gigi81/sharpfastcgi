@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27703.2000
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastCgi", "FastCgi\FastCgi.csproj", "{A3C516B6-046B-44C2-9387-2D01646589C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Grillisoft.FastCgi", "FastCgi\Grillisoft.FastCgi.csproj", "{A3C516B6-046B-44C2-9387-2D01646589C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastCgi.Test", "FastCgi.Test\FastCgi.Test.csproj", "{CDBC8D4A-CB1C-4DF9-B1A8-A3A5D07B2D71}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grillisoft.FastCgi.Test", "FastCgi.Test\Grillisoft.FastCgi.Test.csproj", "{CDBC8D4A-CB1C-4DF9-B1A8-A3A5D07B2D71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastCgi.AspNet", "FastCgi.AspNet\FastCgi.AspNet.csproj", "{315E3781-3E29-459B-A0D6-EF880F60D6E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Grillisoft.FastCgi.AspNet", "FastCgi.AspNet\Grillisoft.FastCgi.AspNet.csproj", "{315E3781-3E29-459B-A0D6-EF880F60D6E0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{60B19B6D-B0B8-4B2D-B53C-EC9080CDDEC5}"
 	ProjectSection(SolutionItems) = preProject
@@ -15,15 +15,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastCgi.Server", "FastCgi.Server\FastCgi.Server.csproj", "{2EA7BA06-B06C-4296-A8B7-E5DB3E9268B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grillisoft.FastCgi.Server", "FastCgi.Server\Grillisoft.FastCgi.Server.csproj", "{2EA7BA06-B06C-4296-A8B7-E5DB3E9268B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastCgi.UnitTest", "FastCgi.UnitTest\FastCgi.UnitTest.csproj", "{67219CCA-AEF5-499A-9580-36CFEFA3EEAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Grillisoft.FastCgi.UnitTest", "FastCgi.UnitTest\Grillisoft.FastCgi.UnitTest.csproj", "{67219CCA-AEF5-499A-9580-36CFEFA3EEAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmutableArray", "ImmutableArray\ImmutableArray.csproj", "{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Grillisoft.ImmutableArray", "ImmutableArray\Grillisoft.ImmutableArray.csproj", "{AFE9FDDE-332C-41A5-8DA5-6C974F9E6956}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastCgi.Loggers.Log4Net", "FastCgi.Loggers.Log4Net\FastCgi.Loggers.Log4Net.csproj", "{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Grillisoft.FastCgi.Loggers.Log4Net", "FastCgi.Loggers.Log4Net\Grillisoft.FastCgi.Loggers.Log4Net.csproj", "{EE31060B-980B-4E24-AE84-0DF6A0F0E95D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastCgi.Owin", "FastCgi.Owin\FastCgi.Owin.csproj", "{22F4FD2E-F0D6-4EAF-84FC-D3F048C4A3E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Grillisoft.FastCgi.Owin", "FastCgi.Owin\Grillisoft.FastCgi.Owin.csproj", "{22F4FD2E-F0D6-4EAF-84FC-D3F048C4A3E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

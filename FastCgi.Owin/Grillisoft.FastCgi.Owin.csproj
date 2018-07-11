@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net452</TargetFrameworks>
+    </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\FastCgi\Grillisoft.FastCgi.csproj" />
+    </ItemGroup>
+	<ItemGroup>
+      <PackageReference Include="Owin" Version="1.0" />
+	  <PackageReference Include="Microsoft.Owin" Version="4.0.0" />
+    </ItemGroup>
+</Project>

@@ -1,23 +1,22 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using ByteArray = Grillisoft.ImmutableArray.ImmutableArray<byte>;
 
 namespace Grillisoft.FastCgi.UnitTest
 {
-    [TestClass]
     public class ImmutableArrayTests
     {
-        [TestMethod]
+        [Fact]
         public void Create()
         {
             var source = new byte[] { 1, 2, 3 };
             var data = new ByteArray(source);
 
-            Assert.IsTrue(data.Count == source.Length);
-            Assert.IsTrue(data.Equals(source));
+            Assert.True(data.Count == source.Length);
+            Assert.True(data.Equals(source));
         }
 
-        [TestMethod]
+        [Fact]
         public void CopyTo()
         {
             var source = new byte[] { 1, 2, 3 };
@@ -27,10 +26,10 @@ namespace Grillisoft.FastCgi.UnitTest
             data.CopyTo(dest, 0);
 
             for (int i = 0; i < source.Length; i++)
-                Assert.AreEqual(source[i], dest[i]);
+                Assert.Equal(source[i], dest[i]);
         }
 
-        [TestMethod]
+        [Fact]
         public void Concat()
         {
             var source1 = new byte[] { 1, 2, 3 };
@@ -39,13 +38,13 @@ namespace Grillisoft.FastCgi.UnitTest
             var data = new ByteArray(source1).Concat(new ByteArray(source2));
 
             for (int i = 0; i < source1.Length; i++)
-                Assert.AreEqual(source1[i], data[i]);
+                Assert.Equal(source1[i], data[i]);
 
             for (int i = 0; i < source2.Length; i++)
-                Assert.AreEqual(source2[i], data[i + source1.Length]);
+                Assert.Equal(source2[i], data[i + source1.Length]);
         }
 
-        [TestMethod]
+        [Fact]
         public void SubArray()
         {
             var source = new byte[] { 1, 2, 3, 4, 5, 6 };
@@ -53,11 +52,11 @@ namespace Grillisoft.FastCgi.UnitTest
             var dest = new byte[] { 3, 4 };
             var wrong = new byte[] { 5, 6 };
 
-            Assert.IsTrue(data.Equals(dest));
-            Assert.IsFalse(data.Equals(wrong));
+            Assert.True(data.Equals(dest));
+            Assert.False(data.Equals(wrong));
         }
 
-        [TestMethod]
+        [Fact]
         public void ConcatSubArray()
         {
             var source1 = new byte[] { 1, 2, 3 };
@@ -71,14 +70,14 @@ namespace Grillisoft.FastCgi.UnitTest
             var data2 = data.SubArray(2, 5);
             var ret = new byte[] { 3, 4, 5, 6, 7 };
 
-            Assert.IsTrue(data2.Count == ret.Length);
-            Assert.IsTrue(data2.Equals(ret));
+            Assert.True(data2.Count == ret.Length);
+            Assert.True(data2.Equals(ret));
 
-            Assert.IsTrue(data2[3] == ret[3]);
-            Assert.IsTrue(data2[4] != ret[3]);
+            Assert.True(data2[3] == ret[3]);
+            Assert.True(data2[4] != ret[3]);
         }
 
-        [TestMethod]
+        [Fact]
         public void ConcatCopyTo()
         {
             var source1 = new byte[] { 1, 2, 3 };
@@ -95,11 +94,11 @@ namespace Grillisoft.FastCgi.UnitTest
 
             using(var dataSub = data.SubArray(0, dest.Length))
             {
-                Assert.IsTrue(dataSub.Equals(dest));
+                Assert.True(dataSub.Equals(dest));
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void ToArray()
         {
             var source1 = new byte[] { 1, 2, 3 };
@@ -113,12 +112,12 @@ namespace Grillisoft.FastCgi.UnitTest
             var dest = data.ToArray(2, 5);
             var check = new byte[] { 3, 4, 5, 6, 7 };
 
-            Assert.AreEqual(dest.Length, check.Length);
+            Assert.Equal(dest.Length, check.Length);
             for (int i = 0; i < check.Length; i++)
-                Assert.AreEqual(dest[i], check[i]);
+                Assert.Equal(dest[i], check[i]);
         }
 
-        [TestMethod]
+        [Fact]
         public void BufferManager()
         {
             var source = new byte[17342];
@@ -129,8 +128,8 @@ namespace Grillisoft.FastCgi.UnitTest
 
             var data = new ByteArray(source);
 
-            Assert.IsTrue(data.Count == source.Length);
-            Assert.IsTrue(data.Equals(source));
+            Assert.True(data.Count == source.Length);
+            Assert.True(data.Equals(source));
         }
     }
 }

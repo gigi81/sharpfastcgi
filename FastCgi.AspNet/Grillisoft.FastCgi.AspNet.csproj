@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>net40</TargetFrameworks>
+    </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\ImmutableArray\Grillisoft.ImmutableArray.csproj" />
+	  <ProjectReference Include="..\FastCgi\Grillisoft.FastCgi.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Reference Include="System.Web" />
+    </ItemGroup>
+</Project>

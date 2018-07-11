@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
+    </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\FastCgi\Grillisoft.FastCgi.csproj" />
+    </ItemGroup>
+	<ItemGroup>
+      <PackageReference Include="log4net" Version="2.0.6" />
+    </ItemGroup>
+</Project>

@@ -29,16 +29,20 @@ using System.Text;
 
 namespace Grillisoft.ImmutableArray
 {
-	/// <summary>
-	/// Immutable array
-	/// </summary>
-	/// <typeparam name="T">Elements type of the array</typeparam>
-	public class ImmutableArray<T> : IDisposable, ICloneable, ICollection, IEnumerable<T> where T : struct, IComparable, IEquatable<T>, IConvertible
-	{
-		/// <summary>
-		/// Empty array
-		/// </summary>
-		public static readonly ImmutableArray<T> Empty = new ImmutableArray<T>(new T[0]);
+    /// <summary>
+    /// Immutable array
+    /// </summary>
+    /// <typeparam name="T">Elements type of the array</typeparam>
+#if NET40
+    public class ImmutableArray<T> : IDisposable, ICloneable, ICollection, IEnumerable<T> where T : struct, IComparable, IEquatable<T>, IConvertible
+#else
+    public class ImmutableArray<T> : IDisposable, ICollection, IEnumerable<T> where T : struct, IComparable, IEquatable<T>, IConvertible
+#endif
+    {
+        /// <summary>
+        /// Empty array
+        /// </summary>
+        public static readonly ImmutableArray<T> Empty = new ImmutableArray<T>(new T[0]);
 
 		private readonly List<ImmutableArrayInternal<T>> _arrays = new List<ImmutableArrayInternal<T>>();
 		private readonly List<int> _offsets = new List<int>();
@@ -503,6 +507,7 @@ namespace Grillisoft.ImmutableArray
         }
 		#endregion
 
+#if NET40
 		#region Members of ICloneable
 		/// <summary>
 		/// Clone this array. As long as this is an immutable object it returns the reference of this object
@@ -513,7 +518,7 @@ namespace Grillisoft.ImmutableArray
 			return this;
 		}
 		#endregion
-
+#endif
         #region Members of IEnumerable<T>
 
         public IEnumerator<T> GetEnumerator()

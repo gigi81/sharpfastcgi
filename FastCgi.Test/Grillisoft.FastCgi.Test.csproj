@@ -71,17 +71,17 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FastCgi.AspNet\FastCgi.AspNet.csproj">
+    <ProjectReference Include="..\FastCgi.AspNet\Grillisoft.FastCgi.AspNet.csproj">
       <Project>{315E3781-3E29-459B-A0D6-EF880F60D6E0}</Project>
-      <Name>FastCgi.AspNet</Name>
+      <Name>Grillisoft.FastCgi.AspNet</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FastCgi.Loggers.Log4Net\FastCgi.Loggers.Log4Net.csproj">
+    <ProjectReference Include="..\FastCgi.Loggers.Log4Net\Grillisoft.FastCgi.Loggers.Log4Net.csproj">
       <Project>{ee31060b-980b-4e24-ae84-0df6a0f0e95d}</Project>
-      <Name>FastCgi.Loggers.Log4Net</Name>
+      <Name>Grillisoft.FastCgi.Loggers.Log4Net</Name>
     </ProjectReference>
-    <ProjectReference Include="..\FastCgi\FastCgi.csproj">
+    <ProjectReference Include="..\FastCgi\Grillisoft.FastCgi.csproj">
       <Project>{A3C516B6-046B-44C2-9387-2D01646589C9}</Project>
-      <Name>FastCgi</Name>
+      <Name>Grillisoft.FastCgi</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

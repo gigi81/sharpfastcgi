@@ -12,7 +12,7 @@ namespace Grillisoft.FastCgi.Loggers.Log4Net
 
         public ILogger Create(string name)
         {
-            return new Logger(log4net.LogManager.GetLogger(name));
+            return new Logger(log4net.LogManager.GetLogger("fastcgi", name));
         }
     }
 }
