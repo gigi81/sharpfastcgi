@@ -34,7 +34,7 @@ namespace Grillisoft.FastCgi.Protocol
     public class InputStream : Stream
     {
         private ByteArray _array;
-        private long position;
+        private long _position;
 
         public InputStream()
             : this(ByteArray.Empty)
@@ -77,7 +77,7 @@ namespace Grillisoft.FastCgi.Protocol
         {
             get
             {
-                return position;
+                return _position;
             }
 
             set
@@ -92,7 +92,7 @@ namespace Grillisoft.FastCgi.Protocol
                     throw new EndOfStreamException();
                 }
 
-                position = value;
+                _position = value;
             }
         }
         

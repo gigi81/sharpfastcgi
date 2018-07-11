@@ -1,20 +1,21 @@
 ﻿using Grillisoft.FastCgi.Protocol;
+using Microsoft.Owin;
 
 namespace Grillisoft.FastCgi.Owin
 {
     public class OwinChannel : SimpleFastCgiChannel
     {
-        Microsoft.Owin.OwinMiddleware pipeline;
+        OwinMiddleware _pipeline;
 
-        public OwinChannel(ILowerLayer layer, ILoggerFactory loggerFactory, Microsoft.Owin.OwinMiddleware pipeline)
+        public OwinChannel(ILowerLayer layer, ILoggerFactory loggerFactory, OwinMiddleware pipeline)
             : base(layer, loggerFactory)
         {
-            this.pipeline = pipeline;
+            _pipeline = pipeline;
         }
 
         protected override Request CreateRequest(ushort requestId, BeginRequestMessageBody body)
         {
-            return new OwinRequest(requestId, body, pipeline);
+            return new OwinRequest(requestId, body, _pipeline);
         }
     }
 }
