@@ -13,4 +13,8 @@
     <copyright>Copyright 2018 Luigi Grilli</copyright>
     <tags>fastcgi web server</tags>
   </metadata>
+
+  <dependencies>
+    <dependency id="Grillisoft.FastCgi" version="$version$" />
+  </dependencies>
 </package>
