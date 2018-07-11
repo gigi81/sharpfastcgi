@@ -3,7 +3,6 @@
   <metadata>
     <id>$id$</id>
     <version>$version$</version>
-    <title>$title$</title>
     <authors>Luigi Grilli</authors>
     <owners>Luigi Grilli</owners>
     <licenseUrl>https://github.com/gigi81/sharpfastcgi/blob/master/LICENSE.txt</licenseUrl>
