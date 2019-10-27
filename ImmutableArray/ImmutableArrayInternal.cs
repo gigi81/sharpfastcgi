@@ -32,8 +32,6 @@ namespace Grillisoft.ImmutableArray
 {
 	internal class ImmutableArrayInternal<T> where T : struct, IComparable, IEquatable<T>, IConvertible
 	{
-        private static readonly IBufferManager<T> _bufferManager = new BufferManager<T>();
-
 		private static readonly T[] EmptyArray = new T[0];
 
 		/// <summary>
@@ -64,20 +62,20 @@ namespace Grillisoft.ImmutableArray
 			if ((sourceIndex + length) > data.Length)
 				throw new ArgumentOutOfRangeException("The sourceIndex and length specified overcome the source ByteArray length");
 
-            foreach (var buffer in _bufferManager.Allocate(length))
+            foreach (var buffer in BufferManagerFactory<T>.Instance.Allocate(length))
             {
                 var part = Math.Min(buffer.Length, length);
                 Array.Copy(data, sourceIndex, buffer, 0, part);
-                yield return new ImmutableArrayInternal<T>(sourceIndex, buffer, part);
+                yield return new ImmutableArrayInternal<T>(buffer, part);
 
                 sourceIndex += part;
                 length -= part;
             }
         }
 
-		private ImmutableArrayInternal(int sourceIndex, T[] data, int length)
+		internal ImmutableArrayInternal(T[] data, int length, int offset = 0)
 		{
-			_offset = 0;
+			_offset = offset;
             _data = data;
 			_length = length;
 		}
@@ -177,7 +175,7 @@ namespace Grillisoft.ImmutableArray
 
             if (ret == 0 && !object.ReferenceEquals(_data, EmptyArray))
             {
-                _bufferManager.Free(_data);
+                BufferManagerFactory<T>.Instance.Free(_data);
                 _data = null;
             }
 

@@ -54,47 +54,47 @@ namespace Grillisoft.FastCgi.AspNet
 
 		public override string GetHttpVerbName()
 		{
-			return _request.Parameters.GetValue("REQUEST_METHOD");
+			return _request.Parameters.GetValue(ParametersNames.RequestMethod);
 		}
 
 		public override string GetHttpVersion()
 		{
-			return _request.Parameters.GetValue("SERVER_PROTOCOL");
+			return _request.Parameters.GetValue(ParametersNames.ServerProtocol);
 		}
 
 		public override string GetLocalAddress()
 		{
-			return _request.Parameters.GetValue("SERVER_ADDR");
+			return _request.Parameters.GetValue(ParametersNames.ServerAddress);
 		}
 
 		public override int GetLocalPort()
 		{
-			return Int32.Parse(_request.Parameters.GetValue("SERVER_PORT"));
+			return Int32.Parse(_request.Parameters.GetValue(ParametersNames.ServerPort));
 		}
 
 		public override string GetQueryString()
 		{
-			return _request.Parameters.GetValue("QUERY_STRING");
+			return _request.Parameters.GetValue(ParametersNames.QueryString);
 		}
 
 		public override string GetRawUrl()
 		{
-			return _request.Parameters.GetValue("REQUEST_URI");
+			return _request.Parameters.GetValue(ParametersNames.RequestUri);
 		}
 
 		public override string GetRemoteAddress()
 		{
-			return _request.Parameters.GetValue("REMOTE_ADDR");
+			return _request.Parameters.GetValue(ParametersNames.RemoteAddress);
 		}
 
 		public override int GetRemotePort()
 		{
-			return Int32.Parse(_request.Parameters.GetValue("REMOTE_PORT"));
+			return Int32.Parse(_request.Parameters.GetValue(ParametersNames.RemotePort));
 		}
 
 		public override string GetUriPath()
 		{
-			return _request.Parameters.GetValue("REQUEST_URI");
+			return _request.Parameters.GetValue(ParametersNames.RequestUri);
 		}
 
 		public override void SendKnownResponseHeader(int index, string value)
@@ -157,14 +157,14 @@ namespace Grillisoft.FastCgi.AspNet
 
 		public override string GetUnknownRequestHeader(string name)
 		{
-			return _request.Parameters.GetValue(HeaderNameToParameterName(name));
+			return _request.Parameters.GetValue(name.ToParameterName());
 		}
 
 		public override string[][] GetUnknownRequestHeaders()
 		{
 			return _request.Parameters
 						   .Where(p => p.Name.StartsWith("HTTP_"))
-						   .Where(p => !IsKnownRequestHeader(ParameterNameToHeaderName(p.Name)))
+						   .Where(p => !IsKnownRequestHeader(p.Name.ToHeaderName()))
 						   .Select(p => new[] { p.Name, p.Value })
                            .ToArray();
 		}
@@ -176,7 +176,7 @@ namespace Grillisoft.FastCgi.AspNet
 
 		public override string GetKnownRequestHeader(int index)
 		{
-			return _request.Parameters.GetValue(HeaderNameToParameterName(GetKnownRequestHeaderName(index)));
+			return _request.Parameters.GetValue(GetKnownRequestHeaderName(index).ToParameterName());
 		}
 
 		public override string GetServerVariable(string name)
@@ -198,19 +198,6 @@ namespace Grillisoft.FastCgi.AspNet
 		{
 			//WARNING: the webserver must be configured to set the PATH_INFO fastcgi parameter
 			return _request.Parameters.GetValue("PATH_INFO") ?? String.Empty;
-		}
-
-		private string HeaderNameToParameterName(string headerName)
-		{
-			return "HTTP_" + headerName.ToUpper().Replace('-', '_');
-		}
-
-		private string ParameterNameToHeaderName(string parameterName)
-		{
-			if (!parameterName.StartsWith("HTTP_"))
-				throw new ArgumentException("parameterName");
-
-			return parameterName.Substring(5).Replace('_', '-');
 		}
 	}
 }

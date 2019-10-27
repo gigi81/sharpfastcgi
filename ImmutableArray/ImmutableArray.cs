@@ -25,6 +25,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Grillisoft.ImmutableArray
@@ -103,7 +104,7 @@ namespace Grillisoft.ImmutableArray
 		/// Creates an immutable array concatenating the specified array of immutable arrays
 		/// </summary>
 		/// <param name="arrays">Immutable arrays to concatenate</param>
-		private ImmutableArray(IEnumerable<ImmutableArrayInternal<T>> arrays)
+		internal ImmutableArray(IEnumerable<ImmutableArrayInternal<T>> arrays)
 		{
             this.Add(arrays);
 		}

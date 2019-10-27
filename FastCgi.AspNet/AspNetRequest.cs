@@ -23,22 +23,20 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Text;
-using System.Threading;
 using Grillisoft.FastCgi.Protocol;
 using ByteArray = Grillisoft.ImmutableArray.ImmutableArray<byte>;
-using System.Threading.Tasks;
-using System.Web.Hosting;
+using Grillisoft.ImmutableArray;
+using System.IO;
+using System.Text;
 
 namespace Grillisoft.FastCgi.AspNet
 {
-	public class AspNetRequest : Request
+    public class AspNetRequest : Request
 	{
-        private IAspNetRequestConfig _config;
+        private readonly IAspNetRequestConfig _config;
 
-		public AspNetRequest(ushort id, BeginRequestMessageBody body, IAspNetRequestConfig config)
+        public AspNetRequest(ushort id, BeginRequestMessageBody body, IAspNetRequestConfig config)
 			: base(id, body)
 		{
             _config = config;
@@ -98,26 +96,29 @@ namespace Grillisoft.FastCgi.AspNet
 
 		protected virtual ByteArray SerializeHeaders()
 		{
-			var builder = new StringBuilder();
+            using (var stream = new StreamToImmutable())
+            {
+                using (var builder = new StreamWriter(stream, Encoding.UTF8))
+                {
+                    if (!String.IsNullOrEmpty(this.Status))
+                    {
+                        builder.Write(this.Status);
+                        builder.Write("\r\n");
+                    }
 
-			if (!String.IsNullOrEmpty(this.Status))
-			{
-				builder.Append(this.Status);
-				builder.Append("\r\n");
-			}
+                    foreach (string key in this.Headers.Keys)
+                    {
+                        builder.Write(key);
+                        builder.Write(": ");
+                        builder.Write(this.Headers[key]);
+                        builder.Write("\r\n");
+                    }
 
-			foreach (string key in this.Headers.Keys)
-			{
-				builder.Append(key);
-				builder.Append(": ");
-				builder.Append(this.Headers[key]);
-				builder.Append("\r\n");
-			}
+                    builder.Write("\r\n");
 
-			builder.Append("\r\n");
-
-            //TODO: can improve performance without creating the temporary array
-			return new ByteArray(Encoding.UTF8.GetBytes(builder.ToString()));
-		}
+                    return stream.ToImmutableArray();
+                }
+            }
+        }
 	}
 }
